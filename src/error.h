@@ -1,0 +1,13 @@
+#ifndef ERROR_H
+#define ERROR_H
+#include <RcppArmadillo.h>
+
+extern int pipelineCODE[5];
+
+typedef enum {OK, FILE_NOT_FOUND, NON_VALID_MATRIX, NON_VALID_TERM_DESC, TERM_NOT_FOUND, INVALID_BIC_FORM} ERRCODE;
+typedef enum {ROW_ONTOLOGY, COL_ONTOLOGY} ONTOLOGY_TYPE;
+typedef enum {SET_DATASET, SET_COL_ONTOLOGY, SET_ROW_ONTOLOGY, SET_FIND_BICS, SET_DESCRIPTION_BICS, PIPELINE_OK, PIPELINE_UNACCEPTED} PIPELINE;
+
+int printAndCheckPipeline(int actState);
+
+#endif // ERROR_H

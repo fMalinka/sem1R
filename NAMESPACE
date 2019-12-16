@@ -1,0 +1,6 @@
+useDynLib(sem1R)
+exportPattern("^[[:alpha:]]+")
+import(methods)
+import(Rcpp)
+import(RcppProgress)
+import(RcppMLPACK)
