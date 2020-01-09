@@ -52,8 +52,8 @@ colOntoPath <- "example/fbbt-simple.obo"
 mysem1R$createCOLOntology("FBGN", colOntoPath, ontoDesc$col)
 mysem1R$createROWOntology("GO", rowOntoPath, ontoDesc$row)
 
+mysem1R$ruleFormat <- "both"
 
-mysem1R$onlyPosFeatures <- 1
 mysem1R$filterTh <- 100
 mysem1R$objective <- "auc"
 
@@ -61,5 +61,5 @@ mysem1R$ruleDepth <- 9
 mysem1R$nrules <- 10
 mysem1R$featureSelectionMethod <- 0
 mysem1R$minLevel <- 3
-mysem1R$findDescription()
+myhypothesis <- mysem1R$findDescription()
 

@@ -91,7 +91,7 @@ class BeamTopDown
 {
 public:
     BeamTopDown(){;}
-    BeamTopDown(std::vector<bottomFeature> *bottomFeatures, boost::dynamic_bitset<> *myclass, std::string objective);
+    BeamTopDown(std::vector<bottomFeature> *bottomFeatures, boost::dynamic_bitset<> *myclass, std::string objective, int verbose);
     BeamTopDown(arma::mat *data, std::vector<Ontology *> *refOntologies, std::vector< std::vector<boost::dynamic_bitset<>* > > *POSexamples, std::vector< std::vector<boost::dynamic_bitset<>* > > *NEGexamples, std::vector<boost::dynamic_bitset<> > *enrichItems);
     int run();
     int runExhaustive(Rcpp::DataFrame *enrichPropositionTable);
@@ -99,8 +99,11 @@ public:
     newComplex runTopologyVersion(int filterTH, int ruleDepth, double signTH, int minLevel);
     int runTest();
     arma::mat removeCoveredExamples(newComplex actbest, arma::mat *new_armaData, boost::dynamic_bitset<> classBitMask);
-	std::string printCoveredExamples(newComplex actbest, arma::mat *new_armaData, boost::dynamic_bitset<> classBitMask, Rcpp::CharacterVector rownames, Rcpp::CharacterVector colnames);
-	std::string printOnlyCoveredColExamples(newComplex actbest, arma::mat *new_armaData, boost::dynamic_bitset<> classBitMask, Rcpp::CharacterVector rownames, Rcpp::CharacterVector colnames);
+    std::string printCoveredExamples(newComplex actbest, arma::mat *new_armaData, boost::dynamic_bitset<> classBitMask, Rcpp::CharacterVector rownames, Rcpp::CharacterVector colnames);
+    std::string printOnlyCoveredColExamples(newComplex actbest, arma::mat *new_armaData, boost::dynamic_bitset<> classBitMask, Rcpp::CharacterVector rownames, Rcpp::CharacterVector colnames);
+    Rcpp::CharacterVector getOnlyCoveredRowExamples(newComplex actbest, arma::mat *new_armaData, Rcpp::CharacterVector rownames);
+    Rcpp::CharacterVector getOnlyCoveredColExamples(newComplex actbest, arma::mat *new_armaData, Rcpp::CharacterVector colnames);
+    Rcpp::CharacterVector getOnlyCoveredRowColExamples(newComplex actbest, arma::mat *new_armaData, Rcpp::CharacterVector rownames, Rcpp::CharacterVector colnames);
 
 private:
     arma::mat *data;
@@ -115,6 +118,7 @@ private:
 
     std::vector<bottomFeature> *bottomFeatures;
     boost::dynamic_bitset<> *myclass;
+    int verbose;
 
 
     bool generateNewConjunctions(std::priority_queue<conjunction_max> *OPEN_heap, std::priority_queue<conjunction_max> *max_heap, std::vector<boost::dynamic_bitset<> > *CLOSED);
@@ -122,7 +126,6 @@ private:
     bool isBetter(conjunction_max *bestConjunction, conjunction_max *max_heap_top);
     void checkQueueMaxLimit(std::priority_queue<conjunction_max> *max_heap, std::priority_queue<conjunction_min> *min_heap, int limit);
 
-    std::vector<std::priority_queue<conjunction_max> > getElongatedRules(std::priority_queue<conjunction_max> *max_heap);
     void initPriorityQueue2(conjunction_max *toInit, std::priority_queue<conjunction_max> *OPEN_heap, std::priority_queue<conjunction_max> *max_heap, std::vector<boost::dynamic_bitset<> > *CLOSED);
 
 

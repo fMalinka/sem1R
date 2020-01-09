@@ -8,19 +8,21 @@ Example::Example(int kbics, arma::mat *armaData, std::vector<paretoSet> *myparet
     this->refOntologies = refOntologies;
 }
 */
-Example::Example(int kbics, arma::mat *armaData, std::vector<Ontology *> *refOntologies)
+Example::Example(int kbics, arma::mat *armaData, std::vector<Ontology *> *refOntologies, int verbose)
 {
     this->kbics = kbics;
     this->armaData = armaData;
     this->refOntologies = refOntologies;
+    this->verbose = verbose;
 }
 //for testing
-Example::Example(arma::mat *testarmaData, boost::unordered_map<std::string, std::vector<std::vector<std::string> > > *rowTestOntologyDesc, boost::unordered_map<std::string, std::vector<std::vector<std::string> > > *colTestOntologyDesc, std::vector<Ontology *> *refOntologies)
+Example::Example(arma::mat *testarmaData, boost::unordered_map<std::string, std::vector<std::vector<std::string> > > *rowTestOntologyDesc, boost::unordered_map<std::string, std::vector<std::vector<std::string> > > *colTestOntologyDesc, std::vector<Ontology *> *refOntologies, int verbose)
 {
     this->armaData = testarmaData;
     this->refOntologies = refOntologies;
     this->rowTestOntologyDesc = rowTestOntologyDesc;
     this->colTestOntologyDesc = colTestOntologyDesc;
+    this->verbose = verbose;
 }
 
 
@@ -87,7 +89,8 @@ void Example::findPositiveExamples()
     arma::uvec indices = arma::find(*(this->armaData) == 1);
     arma::umat tPos = arma::ind2sub(arma::size(*(this->armaData)), indices);
 
-    std::cout << "Positive examples: " << tPos.n_cols << std::endl;
+    if(this->verbose)
+        Rcpp::Rcout << "Positive examples: " << tPos.n_cols << std::endl;
 
 
     //POSITIVE EXAMPLE
@@ -110,7 +113,8 @@ void Example::findNegativeExamples()
     this->buildTrainingExamples(&NEGexamples, &tNeg, refOntologies);
     this->NEGexamples = NEGexamples;
 
-    std::cout << "Negative examples: " << tNeg.n_cols << std::endl;
+    if(this->verbose)
+        Rcpp::Rcout << "Negative examples: " << tNeg.n_cols << std::endl;
 }
 //sem1r version END !!!!!!!
 
@@ -265,7 +269,8 @@ void Example::buildTestingExamples(double positiveTH, double negativeTH)
     arma::uvec indices = arma::find(*(this->armaData) == 1);
     arma::umat tPos = arma::ind2sub(arma::size(*(this->armaData)), indices);
 
-    std::cout << "Positive examples: " << tPos.n_cols << std::endl;
+    if(this->verbose)
+        Rcpp::Rcout << "Positive examples: " << tPos.n_cols << std::endl;
 
 
     //POSITIVE EXAMPLE
@@ -276,7 +281,8 @@ void Example::buildTestingExamples(double positiveTH, double negativeTH)
     arma::uvec indicesNeg = arma::find(*(this->armaData) == 0);//this->sumMatOverAll < (threshold * arma::max(arma::max(this->sumMatOverAll))));
     arma::umat tNeg = arma::ind2sub(arma::size(*(this->armaData)), indicesNeg);
 
-    std::cout << "Negative examples: " << tNeg.n_cols << std::endl;
+    if(this->verbose)
+        Rcpp::Rcout << "Negative examples: " << tNeg.n_cols << std::endl;
 
     std::vector< std::vector<boost::dynamic_bitset<>* > > POSexamples(tPos.n_cols);
     std::vector< std::vector<boost::dynamic_bitset<>* > > NEGexamples(tNeg.n_cols);
@@ -378,7 +384,8 @@ Rcpp::DataFrame Example::getPropositionalTable(int bic)
     Rcpp::LogicalVector featureClass(POSexamples.size() + NEGexamples.size());
     //featureClass.resize(POSexamples[0].size() + NEGexamples.size());
 
-    std::cout << "feature number: " << featureNumber << std::endl;
+    if(this->verbose)
+        Rcpp::Rcout << "feature number: " << featureNumber << std::endl;
     //initialize vector
     for(int iinit = 0; iinit < featureVector.size(); ++iinit)
     {
@@ -536,10 +543,12 @@ Rcpp::DataFrame Example::getEnrichTable(int bic, std::vector<Node *> *enrichNode
                 ++bonferroni;
         }
 
-        std::cout << std::endl;
         double alpha = 0.05;
-        std::cout << "alpha: " << alpha << " number of hypothesis: " << bonferroni << " new alpha: " << alpha/(double)bonferroni  << "sample size: " << sampleSize << std::endl;
-
+        if(this->verbose)
+        {
+            Rcpp::Rcout << std::endl;
+            Rcpp::Rcout << "alpha: " << alpha << " number of hypothesis: " << bonferroni << " new alpha: " << alpha/(double)bonferroni  << "sample size: " << sampleSize << std::endl;
+        }
         boost::dynamic_bitset<> enrichment(nterm);
         boost::unordered_map<unsigned int, bool> idNumHash;
         int nulla = 0;
@@ -551,14 +560,16 @@ Rcpp::DataFrame Example::getEnrichTable(int bic, std::vector<Node *> *enrichNode
                 idNumHash[ivec] = true;
                 //refOntologies[ionto].getOntologyParser();
                 enrichNodes->push_back((*refOntologies)[ionto]->getOntologyParser()->getNodesByPosition(ivec));
-                std::cout << "ench score: " << pVAL(ivec) << " node: " << (*refOntologies)[ionto]->getOntologyParser()->getNodesByPosition(ivec)->name << " termPos: " << termPosSucc(ivec) << " termNeg: " << termNegSucc(ivec) << std::endl;
+                if(this->verbose)
+                    Rcpp::Rcout << "ench score: " << pVAL(ivec) << " node: " << (*refOntologies)[ionto]->getOntologyParser()->getNodesByPosition(ivec)->name << " termPos: " << termPosSucc(ivec) << " termNeg: " << termNegSucc(ivec) << std::endl;
                 ++featureNumber;
             }
 
             if(termPosSucc(ivec) == 0)
                 nulla++;
         }
-        std::cout << "enrichment for : " << actOnto->getName() << " en count: " << enrichment.count() << " total: " << enrichment.size() << " pocet null:" << nulla << std::endl;
+        if(this->verbose)
+            Rcpp::Rcout << "enrichment for : " << actOnto->getName() << " en count: " << enrichment.count() << " total: " << enrichment.size() << " pocet null:" << nulla << std::endl;
 
         enrichItems.push_back(enrichment);
         enrichIDnums.push_back(idNumHash);//refOntologies[ionto]->getOntologyParser()->getNodesByPosition(ibit)->idNum);
@@ -668,9 +679,12 @@ Rcpp::DataFrame Example::getEnrichTablev2(int bic, std::vector<Node *> *enrichNo
                 ++bonferroni;
         }
 
-        std::cout << std::endl;
         double alpha = 0.05;
-        std::cout << "alpha: " << alpha << " number of hypothesis: " << bonferroni << " new alpha: " << alpha/(double)bonferroni  << "sample size: " << sampleSize << std::endl;
+        if(this->verbose)
+        {
+            Rcpp::Rcout << std::endl;
+            Rcpp::Rcout << "alpha: " << alpha << " number of hypothesis: " << bonferroni << " new alpha: " << alpha/(double)bonferroni  << "sample size: " << sampleSize << std::endl;
+        }
 
         boost::dynamic_bitset<> enrichment(nterm);
         boost::unordered_map<unsigned int, bool> idNumHash;
@@ -690,7 +704,8 @@ Rcpp::DataFrame Example::getEnrichTablev2(int bic, std::vector<Node *> *enrichNo
             if(termPosSucc(ivec) == 0)
                 nulla++;
         }
-        std::cout << "enrichment for : " << actOnto->getName() << " en count: " << enrichment.count() << " total: " << enrichment.size() << " pocet null:" << nulla << std::endl;
+        if(this->verbose)
+            Rcpp::Rcout << "enrichment for : " << actOnto->getName() << " en count: " << enrichment.count() << " total: " << enrichment.size() << " pocet null:" << nulla << std::endl;
 
         enrichItems.push_back(enrichment);
         enrichIDnums.push_back(idNumHash);//refOntologies[ionto]->getOntologyParser()->getNodesByPosition(ibit)->idNum);
@@ -867,18 +882,11 @@ mydataframe Example::getEnrichTablev2Sigbitset(int bic, std::vector<Node *> *enr
     int featureNumber = 0;
     for(int ionto = 0; ionto < refOntologies->size(); ++ionto)
     {
-        int sizePop = 0;
-        int sampleSize = 0;
-
         int nterm = (*refOntologies)[ionto]->getOntologyParser()->getTermsNumber();
-        std::vector<int> termPosSucc(nterm, 0);
-        std::vector<int> termNegSucc(nterm, 0);
         std::vector<double> pVAL(nterm, 0);
 
         Ontology *actOnto = (*refOntologies)[ionto];
         //std::vector<boost::dynamic_bitset<> *> patterns = actOnto->getSemanticPatterns();
-        int ppos = 0;
-        int nneg = 0;
 
         //pareto bicluster -> example->ontology->bitset
         this->POSexamples;
@@ -928,14 +936,15 @@ mydataframe Example::getEnrichTablev2Sigbitset(int bic, std::vector<Node *> *enr
  //               idNumHash[ivec] = true;
                 //refOntologies[ionto].getOntologyParser();
                 enrichNodes->push_back((*refOntologies)[ionto]->getOntologyParser()->getNodesByPosition(ivec));
-                //std::cout << "ench score: " << pVAL(ivec) << " node: " << (*refOntologies)[ionto]->getOntologyParser()->getNodesByPosition(ivec)->name << " termPos: " << termPosSucc(ivec) << " termNeg: " << termNegSucc(ivec) << std::endl;
+                //Rcpp::Rcout << "ench score: " << pVAL(ivec) << " node: " << (*refOntologies)[ionto]->getOntologyParser()->getNodesByPosition(ivec)->name << " termPos: " << termPosSucc(ivec) << " termNeg: " << termNegSucc(ivec) << std::endl;
                 ++featureNumber;
             }
 
             //if(termPosSucc[ivec] == 0)
             //    nulla++;
         }
-        std::cout << "enrichment for : " << actOnto->getName() << " en count: " << enrichment.count() << " total: " << enrichment.size() << std::endl;
+        if(this->verbose)
+            Rcpp::Rcout << "enrichment for : " << actOnto->getName() << " en count: " << enrichment.count() << " total: " << enrichment.size() << std::endl;
 
         enrichItems.push_back(enrichment);
         //enrichIDnums.push_back(idNumHash);//refOntologies[ionto]->getOntologyParser()->getNodesByPosition(ibit)->idNum);
@@ -1298,8 +1307,6 @@ mydataframe Example::getEnrichTablev2AncestorsSigbitset(int bic, std::vector<Nod
 
         Ontology *actOnto = (*refOntologies)[ionto];
         //std::vector<boost::dynamic_bitset<> *> patterns = actOnto->getSemanticPatterns();
-        int ppos = 0;
-        int nneg = 0;
 
         //pareto bicluster -> example->ontology->bitset
         this->POSexamples;
@@ -1368,7 +1375,7 @@ mydataframe Example::getEnrichTablev2AncestorsSigbitset(int bic, std::vector<Nod
                 ++sizePop;
         }
 
-        std::cout << std::endl;
+        Rcpp::Rcout << std::endl;
         double alpha = 0.05;
         //std::cout << "alpha: " << alpha << " number of hypothesis: " << bonferroni << " new alpha: " << alpha/(double)bonferroni  << "sample size: " << sampleSize << std::endl;
 
@@ -1402,7 +1409,8 @@ mydataframe Example::getEnrichTablev2AncestorsSigbitset(int bic, std::vector<Nod
 				enrichmentAndSize[ibit] = 1;
 			}
 		}
-        std::cout << "enrichment for : " << actOnto->getName() << " en count: " << enrichmentAndSize.count() << " total: " << enrichmentAndSize.size() << " pocet null:" << nulla << std::endl;
+        if(this->verbose)
+            Rcpp::Rcout << "enrichment for : " << actOnto->getName() << " en count: " << enrichmentAndSize.count() << " total: " << enrichmentAndSize.size() << " pocet null:" << nulla << std::endl;
 
 		featureNumber += enrichmentAndSize.count();
         enrichItems.push_back(enrichmentAndSize);
@@ -1547,9 +1555,6 @@ mydataframe Example::getEnrichTablev3THbitset(int bic, std::vector<Node *> *enri
     int featureNumber = 0;
     for(int ionto = 0; ionto < refOntologies->size(); ++ionto)
     {
-        int sizePop = 0;
-        int sampleSize = 0;
-
         int nterm = (*refOntologies)[ionto]->getOntologyParser()->getTermsNumber();
         std::vector<int> termSucc(nterm, 0.0);
 
@@ -1604,7 +1609,8 @@ mydataframe Example::getEnrichTablev3THbitset(int bic, std::vector<Node *> *enri
             if(termSucc[ivec] == 0)
                 nulla++;
         }
-        std::cout << "enrichment for : " << actOnto->getName() << " en count: " << enrichment.count() << " total: " << enrichment.size() << " pocet null:" << nulla << std::endl;
+        if(this->verbose)
+            Rcpp::Rcout << "enrichment for : " << actOnto->getName() << " en count: " << enrichment.count() << " total: " << enrichment.size() << " pocet null:" << nulla << std::endl;
 
         enrichItems.push_back(enrichment);
         //enrichIDnums.push_back(idNumHash);//refOntologies[ionto]->getOntologyParser()->getNodesByPosition(ibit)->idNum);

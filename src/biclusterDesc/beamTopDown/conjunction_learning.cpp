@@ -43,10 +43,11 @@ BeamTopDown::BeamTopDown(arma::mat *data, std::vector<Ontology *> *refOntologies
     this->NEGexamples = NEGexamples;
     this->enrichItems = enrichItems;
 }
-BeamTopDown::BeamTopDown(std::vector<bottomFeature> *bottomFeatures, boost::dynamic_bitset<> *myclass, std::string objective)
+BeamTopDown::BeamTopDown(std::vector<bottomFeature> *bottomFeatures, boost::dynamic_bitset<> *myclass, std::string objective, int verbose)
 {
     this->bottomFeatures = bottomFeatures;
-    this->myclass = myclass; 
+    this->myclass = myclass;
+    this->verbose = verbose;
      
     if(objective == "f1")
     {
@@ -432,11 +433,16 @@ newComplex BeamTopDown::runTopologyVersion(int filterTH, int ruleDepth, double s
         ++iterate;
     }
 
-    std::cout << "RUN 1" << " - size: " << iterate << " best score: " << bestRule.score << std::endl;
-    std::cout << "Rule: " << getPrintableFeature(&bestRule) << std::endl << std::endl;
+    if(this->verbose)
+    {
+        Rcpp::Rcout << "RUN 1" << " - size: " << iterate << " best score: " << bestRule.score << std::endl;
+        Rcpp::Rcout << "Rule: " << getPrintableFeature(&bestRule) << std::endl << std::endl;
+    }
     clock_t end = std::clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    std::cout << "elapsed time: " << elapsed_secs << std::endl << std::endl;
+
+    if(this->verbose)
+        Rcpp::Rcout << "elapsed time: " << elapsed_secs << std::endl << std::endl;
 
 
     filterComplexes(&newCandidates, filterTH);
@@ -447,7 +453,8 @@ newComplex BeamTopDown::runTopologyVersion(int filterTH, int ruleDepth, double s
 	}
 
     boost::dynamic_bitset<> roots = Example::getRoots(this->bottomFeatures);
-    std::cout << "roots: " << roots.count() << std::endl;
+    if(this->verbose)
+        Rcpp::Rcout << "roots: " << roots.count() << std::endl;
     std::vector<int> ontoRoots;
     size_t iroot = roots.find_first();
     while(iroot != boost::dynamic_bitset<>::npos)
@@ -643,255 +650,25 @@ newComplex BeamTopDown::runTopologyVersion(int filterTH, int ruleDepth, double s
         }
         filterComplexes(&tmpNewCandidates, filterTH);
         newCandidates = tmpNewCandidates;
-        std::cout << "RUN " << icycle+2 << " - size: " << iterate << " best score: " << bestRule.score << " count f1score: "  << cf1  << " cov stats: " << getPrintableCoverage(&bestRule, myclass) << std::endl;
-        std::cout << "Rule: " << getPrintableFeature(&bestRule) << std::endl << std::endl;
+
+        if(this->verbose)
+        {
+            Rcpp::Rcout << "RUN " << icycle+2 << " - size: " << iterate << " best score: " << bestRule.score << " count f1score: "  << cf1  << " cov stats: " << getPrintableCoverage(&bestRule, myclass) << std::endl;
+            Rcpp::Rcout << "Rule: " << getPrintableFeature(&bestRule) << std::endl << std::endl;
+        }
         clock_t end = std::clock();
         double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        std::cout << "elapsed time: " << elapsed_secs << std::endl << std::endl;
+
+        if(this->verbose)
+            Rcpp::Rcout << "elapsed time: " << elapsed_secs << std::endl << std::endl;
         
-		if(!atleastOneGenerated)
-		{
-			;//return bestRule;
-		}
-    }
-
-/*
-
-    //newComplex bestRuleEntropy;
-    //bestRuleEntropy.score = INF;
-
-    //newComplex bestRuleACC;
-    //bestRuleACC.score = 0;
-
-    //std::cout << "runTopology: " << iterate << std::endl;
-
-    //std::list<newComplex> newCandidates;
-    std::priority_queue<newComplex> newCandidates;
-    for(int ifeature = 0; ifeature < this->bottomFeatures->size(); ++ifeature)
-    {
-        newComplex newItem;
-        newItem.score = evaluateF1Score(&((*bottomFeatures)[ifeature].exampleCovered), this->myclass);
-        newItem.pathScore = newItem.score;
-        newItem.rules.push_back(&((*bottomFeatures)[ifeature]));
-        newCandidates.push(newItem);
-
-        //std::cout << "bootom i: " << ifeature << " rule: " << getPrintableFeature(&newItem) << " score: " << newItem.score << std::endl;
-
-        if(bestRule.score <= newItem.score)
-            bestRule = newItem;
-
-        //double entropy = evaluateEntropyScore(&((*bottomFeatures)[ifeature].exampleCovered), this->myclass);
-        //if(bestRuleEntropy.score > entropy)
-        //{
-        //    bestRuleEntropy = newItem;
-        //    bestRuleEntropy.score = entropy;
-        //}
-
-        //double acc = evaluateACCScore(&((*bottomFeatures)[ifeature].exampleCovered), this->myclass);
-        //if(bestRuleACC.score < acc)
-        //{
-        //    bestRuleACC = newItem;
-        //    bestRuleACC.score = acc;
-        //}
-
-        ++iterate;
-    }
-
-    std::cout << "RUN 1 - size: " << iterate << " best score: " << bestRule.score << std::endl;
-    std::cout << "Rule: " << getPrintableFeature(&bestRule) << std::endl << std::endl;
-
-    //iterate
-    for(int icycle = 0; icycle < ruleDepth; ++icycle)
-    {
-        std::priority_queue<newComplex> newTmp;
-        //bestRule.score = 0;
-
-        boost::unordered_map<boost::dynamic_bitset<>, bool> duplicitiesBITSET;
-        iterate = 0;
-        int filterTopology = 0;
-        int filterTopologySpecific = 0;
-        int filterScore = 0;
-        totalIterates = 0;
-
-        int cf1 = 0;
-        int cpot = 0;
-        int cf1pot = 0;
-        while(!newCandidates.empty())
+        if(!atleastOneGenerated)
         {
-            newComplex toExpand = newCandidates.top();
-            newCandidates.pop();
-            boost::dynamic_bitset<> allChilds = Example::completAllChilds(&toExpand, bottomFeatures);
-            boost::dynamic_bitset<> allParents = Example::completAllParents(&toExpand,bottomFeatures);
-            boost::dynamic_bitset<> roots = Example::getRoots(this->bottomFeatures, &allChilds);
-
-            boost::dynamic_bitset<> CLOSED(allChilds.size(), 0);
-
-            //std::cout << "ibit roots: " << roots.size() << std::endl;
-
-            for(int ibit = 0; ibit < roots.size(); ++ibit)
-            {
-                //root
-                if(roots[ibit] == 1)
-                {
-                    std::list<newComplex> OPEN;
-                    newComplex myroot = toExpand;
-                    myroot.rules.push_back(&((*bottomFeatures)[ibit]));
-
-                    if(CLOSED[myroot.rules.back()->IDind] == 1)
-                        continue;
-                    //CLOSED[myroot.rules.back()->IDind] = 1;
-
-                    myroot.score = evaluateF1Score(&myroot, myclass);
-                    cf1++;
-                    myroot.pathScore = myroot.score;
-                    OPEN.push_back(myroot);
-
-                    duplicitiesBITSET[getRuleBitset(&myroot)] = true;
-
-                    boost::dynamic_bitset<> allChildsCLOSED = allChilds;
-                    boost::dynamic_bitset<> CLOSED_ACT(allChilds.size(), 0);
-                    int igen = 0;
-                    while(!OPEN.empty())
-                    {
-                        newComplex mycand = OPEN.front();
-                        OPEN.pop_front();
-
-                        //if(CLOSED_ACT[mycand.rules.back()->IDind] == 1)
-                        //    continue;
-                        //CLOSED_ACT[mycand.rules.back()->IDind] = 1;
-
-                        if(CLOSED[mycand.rules.back()->IDind] == 1 ||
-                                allChildsCLOSED[mycand.rules.back()->IDind] == 1||
-                                CLOSED_ACT[mycand.rules.back()->IDind] == 1)
-                            continue;
-                        CLOSED_ACT[mycand.rules.back()->IDind] = 1;
-
-                        //if(duplicitiesBITSET.find(getRuleBitset(&mycand)) == duplicitiesBITSET.end())
-                        //{
-
-                            ++totalIterates;
-
-                            //duplicitiesBITSET[getRuleBitset(&mycand)] = true;
-                            //new feature is non-parent
-                            if(allParents[mycand.rules.back()->IDind] == 0)
-                            {
-                                //mycand.score //parent score
-                                //mycand.pathScore //best path score
-                                double potencialScore;
-                                double newscore;
-                                //get f1 and potentail f1score
-                                evaluateF1ScorePotencialBoth(&mycand, myclass, &newscore, &potencialScore);
-                                cf1++;
-                                //cf1pot++;
-                                //++igen;
-                                if(mycand.pathScore <= potencialScore)
-                                {
-                                    if(newscore > mycand.pathScore)
-                                        mycand.pathScore = newscore;
-                                    mycand.score = newscore;
-
-                                    //not duplicity
-                                    //if(duplicities.find(orderHash) == duplicities.end())
-                                    if(duplicitiesBITSET.find(getRuleBitset(&mycand)) == duplicitiesBITSET.end())
-                                    {
-                                        //duplicities[orderHash] = true;
-                                        duplicitiesBITSET[getRuleBitset(&mycand)] = true;
-                                        newTmp.push(mycand);
-
-                                        //not expand once again
-                                        CLOSED[mycand.rules.back()->IDind] = 1;
-
-                                        ++iterate;
-
-                                        if(bestRule.score < mycand.score)
-                                            bestRule = mycand;
-
-
-                                        //double entropy = evaluateEntropyScore(&(mycand), this->myclass);
-                                        //std::cout << entropy << std::endl;
-                                        //if(bestRuleEntropy.score > entropy)
-                                        //{
-                                        //    bestRuleEntropy = mycand;
-                                        //    bestRuleEntropy.score = entropy;
-                                        //}
-
-                                        //double acc = evaluateACCScore(&(mycand), this->myclass);
-                                        //std::cout << entropy << std::endl;
-                                        //if(bestRuleACC.score < acc)
-                                        //{
-                                        //    bestRuleACC = mycand;
-                                        //    bestRuleACC.score = acc;
-                                       // }
-
-                                    }
-                                }
-                                else
-                                {
-                                    ++filterScore;
-                                    //zde bych jeste mel specifictejsi termy zakazat
-                                    allChildsCLOSED |= Example::completAllChilds(&mycand, bottomFeatures);
-                                    CLOSED_ACT |= Example::completAllChildsLastRule(&mycand, bottomFeatures);
-                                    continue;
-                                }
-                            }
-                        //}
-
-                        CLOSED[mycand.rules.back()->IDind] = 1;
-
-                        //add siblings
-                        size_t ichild = mycand.rules.back()->allChilds.find_first();
-                        while(ichild != boost::dynamic_bitset<>::npos)
-                        {
-                            //if(allChilds[ichild] == 0)
-                            //allChildsCLOSED
-                            if(allChildsCLOSED[ichild] == 0)
-                            {
-                                newComplex newChild = mycand;
-                                newChild.rules[newChild.rules.size()-1] = &((*bottomFeatures)[ichild]);
-                                OPEN.push_back(newChild);
-                            }
-                            else
-                            {
-                                ++filterTopologySpecific;
-                            }
-                            //next
-                            ichild = mycand.rules.back()->allChilds.find_next(ichild);
-                        }
-                    }
-                    filterComplexes(&newTmp, filterTH);
-                   // std::cout << "igen: " << igen << " / " << this->bottomFeatures->size() << std::endl;
-                }
-                //filterComplexes(&newTmp, filterTH);
-            }            
+                ;//return bestRule;
         }
-        int beforeFilter = newTmp.size();
-        filterComplexes(&newTmp, filterTH);
-        newCandidates = newTmp;
-        //std::cout << "rule length: " << icycle+2 << "total generated: " << iterate << " count f1score: "  << cf1 << "count pot: " << cpot << std::endl;
-
-        std::cout << "RUN " << icycle+2 << " - size: " << iterate << " best score: " << bestRule.score << " count f1score: "  << cf1 << " count pot: " << cpot << std::endl;
-        std::cout << "Rule: " << getPrintableFeature(&bestRule) << std::endl << std::endl;
-
-        //std::cout << "Entropy " << " best score: " << bestRuleEntropy.score << " f1: " << evaluateF1Score(&bestRuleEntropy, this->myclass) << std::endl;
-        //std::cout << "Rule: " << getPrintableFeature(&bestRuleEntropy) << std::endl << std::endl;
-
-        //std::cout << "ACC " << " best score: " << bestRuleACC.score << " f1: " << evaluateF1Score(&bestRuleACC, this->myclass) << std::endl;
-        //std::cout << "Rule: " << getPrintableFeature(&bestRuleACC) << std::endl << std::endl;
-
-
-        //boost::dynamic_bitset<> bestChilds = Example::completAllChilds(&bestRule, bottomFeatures);
-
-        //std::cout << "rule length: " << icycle+2 << "total generated: " << iterate << " parent-filtered: " << filterTopology  << " child-filtered: " << filterTopologySpecific << " f1score-filtered: " << filterScore <<  " after filtering: "<< newCandidates.size() << " best score: " << bestRule.score << " rule: " << getPrintableFeature(&bestRule)  << " total iterates: " << totalIterates << std::endl;
     }
 
-//    std::cout << "total score: ";
-//    while(!newCandidates.empty())
-//    {
-//        std::cout << newCandidates.top().score << " ";
-//        newCandidates.pop();
-//    }
-//
-*/
+
     return bestRule;
 }
 std::vector<bottomFeature> BeamTopDown::makeComplex(newComplex *toExpand)
@@ -950,14 +727,18 @@ arma::mat BeamTopDown::removeCoveredExamples(newComplex actbest, arma::mat *new_
 			//std::cout << ibit << " ";
 		}
 	}
-    std::cout << "pos: " << myipos << " neg: " << myineg << std::endl;
-    std::cout << "cover: " << rule.count() << std::endl;
+    if(this->verbose)
+    {
+        Rcpp::Rcout << "pos: " << myipos << " neg: " << myineg << std::endl;
+        Rcpp::Rcout << "cover: " << rule.count() << std::endl;
+    }
     
     arma::uvec indicesPos1 = arma::find(actMatrix == 1);
     arma::uvec indicesNeg1 = arma::find(actMatrix == 0);
     arma::uvec indicesNeu = arma::find(actMatrix == -1);
     
-    std::cout << "in new cycle pos: " << indicesPos1.size() << " neg: " << indicesNeg1.size() << " neut: " << indicesNeu.size() << std::endl << std::endl;
+    if(this->verbose)
+        Rcpp::Rcout << "in new cycle pos: " << indicesPos1.size() << " neg: " << indicesNeg1.size() << " neut: " << indicesNeu.size() << std::endl << std::endl;
    // std::cout << "AFTER REMOVECOVERED: " << std::endl;
    // actMatrix.print();
     
@@ -1142,6 +923,98 @@ std::string BeamTopDown::printOnlyCoveredColExamples(newComplex actbest, arma::m
 		}
 	}
 	return toprint;
+}
+
+
+Rcpp::CharacterVector BeamTopDown::getOnlyCoveredRowExamples(newComplex actbest, arma::mat *new_armaData, Rcpp::CharacterVector rownames)
+{
+    Rcpp::CharacterVector coveredRules;
+    arma::mat actMatrix = *new_armaData;
+    arma::uvec indicesPos = arma::find(actMatrix == 1);
+    arma::umat tPos = arma::ind2sub(arma::size(actMatrix), indicesPos);
+
+    boost::dynamic_bitset<> rule = actbest.rules[0]->exampleCovered;
+    for(int icomplex = 1; icomplex < actbest.rules.size(); ++icomplex)
+    {
+        rule &= actbest.rules[icomplex]->exampleCovered;
+    }
+
+    boost::unordered_map<int, bool> closed;
+    for(int ibit = 0; ibit < indicesPos.n_rows; ++ibit)
+    {
+        int row = tPos.col(ibit)[0]; //row index
+        int col = tPos.col(ibit)[1];
+
+        if(rule[ibit] == 1)
+        {
+            if(closed.find(row) == closed.end())
+            {
+                coveredRules.push_back(Rcpp::as<std::string>(rownames(row)));
+                closed[row] = true;
+            }
+        }
+    }
+    return coveredRules;
+}
+
+Rcpp::CharacterVector BeamTopDown::getOnlyCoveredColExamples(newComplex actbest, arma::mat *new_armaData, Rcpp::CharacterVector colnames)
+{
+    Rcpp::CharacterVector coveredRules;
+    arma::mat actMatrix = *new_armaData;
+    arma::uvec indicesPos = arma::find(actMatrix == 1);
+    arma::umat tPos = arma::ind2sub(arma::size(actMatrix), indicesPos);
+
+    boost::dynamic_bitset<> rule = actbest.rules[0]->exampleCovered;
+    for(int icomplex = 1; icomplex < actbest.rules.size(); ++icomplex)
+    {
+        rule &= actbest.rules[icomplex]->exampleCovered;
+    }
+
+    boost::unordered_map<int, bool> closed;
+    for(int ibit = 0; ibit < indicesPos.n_rows; ++ibit)
+    {
+        int row = tPos.col(ibit)[0]; //row index
+        int col = tPos.col(ibit)[1];
+
+        if(rule[ibit] == 1)
+        {
+            if(closed.find(col) == closed.end())
+            {
+                coveredRules.push_back(Rcpp::as<std::string>(colnames(col)));
+                closed[col] = true;
+            }
+        }
+    }
+    return coveredRules;
+}
+
+Rcpp::CharacterVector BeamTopDown::getOnlyCoveredRowColExamples(newComplex actbest, arma::mat *new_armaData, Rcpp::CharacterVector rownames, Rcpp::CharacterVector colnames)
+{
+    Rcpp::CharacterVector coveredRules;
+    arma::mat actMatrix = *new_armaData;
+    arma::uvec indicesPos = arma::find(actMatrix == 1);
+    arma::umat tPos = arma::ind2sub(arma::size(actMatrix), indicesPos);
+
+    boost::dynamic_bitset<> rule = actbest.rules[0]->exampleCovered;
+    for(int icomplex = 1; icomplex < actbest.rules.size(); ++icomplex)
+    {
+        rule &= actbest.rules[icomplex]->exampleCovered;
+    }
+
+    for(int ibit = 0; ibit < indicesPos.n_rows; ++ibit)
+    {
+        int row = tPos.col(ibit)[0]; //row index
+        int col = tPos.col(ibit)[1];
+
+        if(rule[ibit] == 1)
+        {
+                std::string desc = Rcpp::as<std::string>(rownames(row));
+                desc += ",";
+                desc += colnames(col);
+                coveredRules.push_back(desc);
+        }
+    }
+    return coveredRules;
 }
 
 void BeamTopDown::addNonPotencialNodes2BITSET(newComplex *mycand, boost::unordered_map<boost::dynamic_bitset<>, bool> *duplicitiesBITSET)
@@ -2008,70 +1881,8 @@ int BeamTopDown::run()
     return 0;
 }
 
-
-std::vector<std::priority_queue<conjunction_max> > BeamTopDown::getElongatedRules(std::priority_queue<conjunction_max> *max_heap)
-{
-/*    conjunction_max actBest = max_heap->top();
-    max_heap->pop();
-
-
-    for(int iOnto = 0; iOnto < this->refOntologies->size(); ++iOnto)
-    {
-        std::vector<Node*> *roots = (*refOntologies)[iOnto]->getOntologyParser()->getRoots();
-        //from bottom up to TOP DOWN
-        for(int i = 0; i < roots->size(); ++i)
-        {
-
-            (*roots)[i]= (*roots)[i]->onto_ref->getOntologyParser()->getNodeTopDown(&((*roots)[i]->id));
-        }
-
-        for(int iroot = 0; iroot < roots->size(); ++iroot)
-        {
-            boost::dynamic_bitset<> *bitset = new boost::dynamic_bitset<>((*refOntologies)[iOnto]->getOntologyParser()->getTermsNumber(),0);
-            (*bitset)[(*roots)[iroot]->idNum] = 1;    //set
-            (*CLOSED)[iOnto][(*roots)[iroot]->idNum] = 1;//set closed
-
-//            (*refOntologies)[iOnto]->printSemanticPattern(bitset);
- //           std::cout << std::endl;
-
-            conjunction_max newItem;// = {.object = this->evaluateF1Score(bitset, &ontoID), .node = (*roots)[iroot], .ontoID = ontoID};
-            newItem.object = this->evaluateF1Score(bitset, &iOnto);
-            newItem.node = (*roots)[iroot];
-            newItem.bitset = bitset;
-            newItem.ontoID = iOnto;
-            max_heap->push(newItem);
-            OPEN_heap->push(newItem);
-        }
-    }*/
-}
-
 int BeamTopDown::runTest()
 {
-/*    clock_t begin = clock();
-    string myfile(TRAIN);
-    const char* c_myfile = myfile.c_str();
-    vector<boost::dynamic_bitset<> > featureBitSet;
-    boost::dynamic_bitset<> classMask;
-    vector<string> features;
-*/
-
-
-/*    std::priority_queue<conjunction_max> max_heap;
-    std::priority_queue<conjunction_min> min_heap;
-    std::priority_queue<conjunction_max> OPEN_heap;
-
-    //CLOSED for each ontology
-    std::vector<boost::dynamic_bitset<> > CLOSED;
-    for(int i = 0; i < refOntologies->size(); ++i)
-    {
-        boost::dynamic_bitset<> ontoBit((*refOntologies)[i]->getOntologyParser()->getTermsNumber(), 0);
-        CLOSED.push_back(ontoBit);
-    }
-
-
-    //conjunction_max bestConjunction;
-*/
-
     std::priority_queue<conjunction_max> max_heap;
     std::priority_queue<conjunction_max> max_heap_TOTAL;
     std::priority_queue<conjunction_min> min_heap;
@@ -2113,17 +1924,6 @@ int BeamTopDown::runTest()
     }
 
     std::cout << "Stats: best " << QUEUE_LIMIT << " candidates" << std::endl;
-    int pos = 1;
-
-    /*while(!max_heap.empty())
-    {
-        conjunction_max best = max_heap.top();
-        max_heap.pop();
-        std::cout << pos << " score: " << best.object << " hypothesis: ";
-        best.node->back()->onto_ref->printSemanticPattern(&(best.bitset->back()));
-        pos++;
-    }
-*/
 
     conjunction_max actbest = max_heap.top();
     max_heap.pop();
@@ -2135,315 +1935,6 @@ int BeamTopDown::runTest()
 
     return 0;
 }
-
-/*
-int main(int argc, char* argv[])
-{
-        if(!parseCommandLineParametrs(argc, argv))
-        {
-                cerr << HELP;
-                return EXIT_FAILURE;
-        }
-        else
-                printSettings();
-
-        //TRAIN
-        std::vector<conjunction_max> bestConjunctionS = train();
-        if(bestConjunctionS.empty())
-                return EXIT_FAILURE;
-
-        //TEST
-        if(TEST_FLAG)
-        {
-                test(&bestConjunctionS);
-        }
-
-        return EXIT_SUCCESS;
-}
-*/
-
-/*
-std::vector<conjunction_max> train()
-{
-        clock_t begin = clock();
-        string myfile(TRAIN);
-        const char* c_myfile = myfile.c_str();
-        vector<boost::dynamic_bitset<> > featureBitSet;
-        boost::dynamic_bitset<> classMask;
-        vector<string> features;
-        std::priority_queue<conjunction_max> max_heap;
-        std::priority_queue<conjunction_min> min_heap;
-        std::vector<conjunction_max> bestConjunctionS;
-        boost::unordered_map<string, int> CLOSED;
-
-        if(parseFile(c_myfile, &featureBitSet, &classMask, &features))
-        {
-                conjunction_max bestConjunction;
-                vector<boost::dynamic_bitset<> > featureBitSet_orig = featureBitSet;
-                boost::dynamic_bitset<> classMask_orig = classMask;
-                for(int irule = 0; irule < RULES_LIMIT; ++irule)
-                {
-                        std::vector<conjunction_max> baseTerms = initPriorityQueue(&max_heap, &featureBitSet, &features, &classMask);
-                        int Pclass; int Nclass;
-                        countPN(&classMask, &Pclass, &Nclass);
-
-                        if(Pclass == 0)	//nothing to search
-                                break;
-
-                        cout << "[RULE " << irule+1 << "]" <<" [" << Pclass << "/" << Nclass << "|" << classMask.size() << "] POS/NEG|TOTAL" <<endl;
-
-                        //generate all options
-                        bestConjunction = max_heap.top();
-                        if(VERBOSE)
-                        {
-                                cout << "\tBest initial: " << getPrintableConjunction(max_heap.top(), &features) <<  " | cover ["  <<max_heap.top().P << "/" << max_heap.top().N << "|" << max_heap.top().cover << "]";
-                                if(DEBUG)
-                                        {
-                                                string q;
-                                                if(QUEUE_UNLIMITED)
-                                                        q = "UNLIMITED";
-                                                else
-                                                        q = to_string(QUEUE_LIMIT);
-                                                cout << " QUEUE [" << max_heap.size()  << "| " << q << "]";
-                                        }
-                                         cout << endl;
-                        }
-
-                        for(int i = 0; i < ITERATE_LIMIT; ++i)
-                        {
-                                if(max_heap.empty())
-                                        break;
-
-                                generateNewConjunctions(&max_heap, &featureBitSet, &CLOSED, &classMask, &baseTerms);
-                                if(!QUEUE_UNLIMITED)
-                                        checkQueueMaxLimit(&max_heap, &min_heap);
-
-                                //find the best rule with MIN coveradge and MIN negative examples
-                                conjunction_max candidate = max_heap.top();
-                                if(isBetter(&bestConjunction, &candidate))
-                                        bestConjunction = max_heap.top();
-
-                                if(VERBOSE)
-                                {
-                                        cout << "\ti:" << i+1 << " " << getPrintableConjunction(candidate, &features) <<  " | cover ["  <<candidate.P << "/" << candidate.N << "|" << candidate.cover << "]";
-                                        if(DEBUG)
-                                        {
-                                                string q;
-                                                if(QUEUE_UNLIMITED)
-                                                        q = "UNLIMITED";
-                                                else
-                                                        q = to_string(QUEUE_LIMIT);
-                                                cout << " QUEUE [" << max_heap.size()  << "| " << q << "]";
-                                        }
-                                         cout << endl;
-                                }
-                        }
-                        //if(bestConjunction.cover == 0)
-                        //{
-                        //	break;
-                        //}
-                        cout << "BEST: "  << getPrintableConjunction(bestConjunction, &features) <<  " | cover ["  <<bestConjunction.P << "/" << bestConjunction.N << "|" << bestConjunction.cover << "]" << endl << endl;
-                        eraseCoveredExamples(bestConjunction, &featureBitSet, &classMask);
-                        while(!max_heap.empty())
-                                max_heap.pop();
-                        bestConjunctionS.push_back(bestConjunction);
-                        CLOSED.clear();
-                        if(classMask.empty())
-                                break;
-                }
-
-                //statistics
-                statistics traindataset = evaluateDataset(TRAIN_MODE, &featureBitSet_orig, &classMask_orig, &bestConjunctionS);
-                cout << "=== Error on training data ===" << endl << endl;
-                cout << "TP " << traindataset.TP << "\t FP " << traindataset.FP << endl;
-                cout << "FN " << traindataset.FN << "\t TN " << traindataset.TN << endl;
-                double acc = (traindataset.TP+traindataset.TN)/ double (traindataset.FP+traindataset.FN+traindataset.TP+traindataset.TN);
-                cout.precision(5);
-                cout << "ACC " << acc << endl;
-        }
-        else
-        {
-                cerr << "Unable to read file " << endl;
-                return bestConjunctionS;
-        }
-        clock_t end = clock();
-        double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        cout  << "Time taken to build model: " << elapsed_secs  << "sec."<< endl << endl;
-        return bestConjunctionS;
-}
-*/
-/*
-void test(std::vector<conjunction_max> *rules)
-{
-        string myfile(TEST);
-        const char* c_myfile = myfile.c_str();
-        vector<boost::dynamic_bitset<> > featureBitSet;
-        boost::dynamic_bitset<> classMask;
-        vector<string> features;
-
-
-        if(parseFile(c_myfile, &featureBitSet, &classMask, &features))
-        {
-                statistics test = evaluateDataset(TEST_MODE, &featureBitSet, &classMask, rules);
-                cout << "=== Error on test data ===" << endl << endl;
-                cout << "TP " << test.TP << "\t FP " << test.FP << endl;
-                cout << "FN " << test.FN << "\t TN " << test.TN << endl;
-                double acc = (test.TP+test.TN)/ double (test.FP+test.FN+test.TP+test.TN);
-                cout.precision(5);
-                cout << "ACC " << acc << endl;
-
-                //for(int i = 0; i < test.confidence.size(); ++i)
-                //{
-                //	cout << test.confidence[i] << endl;
-                //}
-
-                //RFILE
-                if(ROC_FLAG)
-                        generateRFile(&featureBitSet, &classMask, rules, &test);
-
-        }
-        else
-                cerr << "Unable to read file" << endl;
-}
-*/
-
-/*
-bool parseCommandLineParametrs(int argc, char* argv[])
-{
-        if(argc <= 2)
-                return false;
-        else
-        {
-                for(int i = 0; i < argc; ++i)
-                {
-                        if(std::string(argv[i]) == "--train")
-                        {
-                                TRAIN_FLAG = true;
-                                TRAIN = std::string(argv[i+1]);
-                        }
-                        else if(std::string(argv[i]) == "--test")
-                        {
-                                TEST_FLAG = true;
-                                TEST = std::string(argv[i+1]);
-                        }
-                        else if(std::string(argv[i]) == "--max_rules")
-                        {
-                                int rules = atoi(argv[i+1]);
-                                if(rules != 0)
-                                        RULES_LIMIT = rules;
-                                else
-                                        return INT_MAX;
-                        }
-                        else if(std::string(argv[i]) == "--max_iteration")
-                        {
-                                int iterate = atoi(argv[i+1]);
-                                if(iterate != 0)
-                                        ITERATE_LIMIT = iterate;
-                                else
-                                        return false;
-                        }
-                        else if(std::string(argv[i]) == "--max_queue")
-                        {
-                                int queue = atoi(argv[i+1]);
-                                if(queue != 0)
-                                        QUEUE_LIMIT = queue;
-                                else
-                                        QUEUE_UNLIMITED = true;
-                        }
-                        else if(std::string(argv[i]) == "--verbose")
-                        {
-                                VERBOSE = 1;
-                        }
-                        else if(std::string(argv[i]) == "--debug")
-                        {
-                                DEBUG = 1;
-                        }
-                        else if(std::string(argv[i]) == "--generateRFile")
-                        {
-                                ROC_FLAG = 1;
-                                ROC = std::string(argv[i+1]);
-                        }
-                }
-                if(!TRAIN_FLAG)
-                        return false;
-        }
-        return true;
-}
-
-int parseFile(const char* file, vector<boost::dynamic_bitset<> > *featureBitSet, boost::dynamic_bitset<> *classMask, vector<string> *features)
-{
-        ifstream myfile(file);
-        if(myfile.is_open())
-        {
-                //boost separetor
-                typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-                boost::char_separator<char> sep(",");
-                long int lineNumber = 0;
-                int lineCollumn = 0;
-                string line;
-
-                //cout << "Parsing..." << endl;
-                while(myfile.good())
-                {
-                        getline(myfile, line);
-                        //iterate to data
-                        if (std::regex_match(line, std::regex("@data") ))
-                        {
-                                for(vector<boost::dynamic_bitset<> >::iterator ibit = featureBitSet->begin(); ibit != featureBitSet->end();  ++ibit)
-                                        (*ibit).resize(BITSET_SIZE, false);
-                                getline(myfile, line);
-                                int resize_circle = 1;
-                                while(myfile.good())
-                                {
-                                        if(lineNumber % (BITSET_SIZE*resize_circle) == 0)
-                                        {
-                                                ++resize_circle;
-                                                for(vector<boost::dynamic_bitset<> >::iterator ibit = featureBitSet->begin(); ibit != featureBitSet->end();  ++ibit)
-                                                        (*ibit).resize(BITSET_SIZE*resize_circle, false);
-                                        }
-                                        tokenizer tokens(line, sep);
-                                        int lineCollumn = 0;
-                                        for(tokenizer::iterator tok_iter = tokens.begin(); tok_iter != tokens.end(); ++tok_iter)
-                                        {
-                                                if(*tok_iter == "'+'")
-                                                {
-                                                        (*featureBitSet)[lineCollumn].set(lineNumber, true);
-                                                }
-                                                ++lineCollumn;
-                                        }
-                                        getline(myfile, line);
-                                        ++lineNumber;
-                                }
-                                for(vector<boost::dynamic_bitset<> >::iterator ibit = featureBitSet->begin(); ibit != featureBitSet->end();  ++ibit)
-                                                        (*ibit).resize(lineNumber, false);
-                                //class
-                                *classMask = featureBitSet->back();
-                                featureBitSet->pop_back();
-                                features->pop_back();
-                        }
-                        else
-                        {
-                                std::smatch m;
-                                std::regex e("@attribute\\s+'([^']+)'");   // matches words beginning by "sub"
-                                std::regex_search(line, m, e);
-                                if(m.size() >=1)
-                                {
-                                        features->push_back(m[1]);
-                                        featureBitSet->push_back(boost::dynamic_bitset<>());
-                                        ++lineCollumn;
-                                }
-                        }
-                }
-        }
-        else
-        {
-                cerr << "Unable to read file " << file << endl;
-                return false;
-        }
-        return true;
-}
-*/
-
 
 bool swap(std::priority_queue<conjunction_max> *max_heap, std::priority_queue<conjunction_min> *min_heap)
 {
@@ -2539,30 +2030,10 @@ void BeamTopDown::initPriorityQueue(std::priority_queue<conjunction_max> *OPEN_h
             newItem.intNode2Specified = iOnto;
             newItem.object = this->evaluateF1Score(&newItem);//newItem.bitset[ontoID], &ontoID);
             newItem.bestPathScore = newItem.object;
+
             std::cout << "root obj: " << newItem.object  << " ONTO: " << (*roots)[iroot]->onto_ref->getName() << " P: " << newItem.P << " N: " << newItem.N << std::endl;
-            //boost::dynamic_bitset<> *bitset = new boost::dynamic_bitset<>((*refOntologies)[iOnto]->getOntologyParser()->getTermsNumber(),0);
-            //(*bitset)[(*roots)[iroot]->idNum] = 1;    //set
             (*CLOSED)[iOnto][(*roots)[iroot]->idNum] = 1;//set closed
 
-//            (*refOntologies)[iOnto]->printSemanticPattern(bitset);
- //           std::cout << std::endl;
-
-            // = {.object = this->evaluateF1Score(bitset, &ontoID), .node = (*roots)[iroot], .ontoID = ontoID};
-
-/*            newItem.object = this->evaluateF1Score(bitset, &iOnto);
-            std::vector<Node*> *newNode = new std::vector<Node*>();
-            newNode->push_back(((*roots)[iroot]));
-            newItem.node = newNode;//(*roots)[iroot];
-
-            std::vector<boost::dynamic_bitset<> > *newbitset = new std::vector<boost::dynamic_bitset<> >();
-            newbitset->push_back(*bitset);
-            newItem.bitset = newbitset;//bitset;
-
-            std::vector<int> *newontoID = new std::vector<int>();
-            newontoID->push_back(iOnto);
-            newItem.ontoID = newontoID;//iOnto;
-
-  */
             max_heap->push(newItem);
             OPEN_heap->push(newItem);
         }
@@ -2578,37 +2049,9 @@ void BeamTopDown::initPriorityQueue2(conjunction_max *toInit, std::priority_queu
         //from bottom up to TOP DOWN
         for(int i = 0; i < roots->size(); ++i)
         {
-
             (*roots)[i]= (*roots)[i]->onto_ref->getOntologyParser()->getNodeTopDown(&((*roots)[i]->id));
         }
-
-/*        for(int iroot = 0; iroot < roots->size(); ++iroot)
-        {
-            boost::dynamic_bitset<> *bitset = new boost::dynamic_bitset<>((*refOntologies)[iOnto]->getOntologyParser()->getTermsNumber(),0);
-            (*bitset)[(*roots)[iroot]->idNum] = 1;    //set
-            (*CLOSED)[iOnto][(*roots)[iroot]->idNum] = 1;//set closed
-
-//            (*refOntologies)[iOnto]->printSemanticPattern(bitset);
- //           std::cout << std::endl;
-
-            conjunction_max newItem;// = {.object = this->evaluateF1Score(bitset, &ontoID), .node = (*roots)[iroot], .ontoID = ontoID};
-
-            newItem.object = this->evaluateF1Score(bitset, &iOnto);
-            std::vector<Node*> *newNode = new std::vector<Node*>();
-            newNode->push_back(((*roots)[iroot]));
-            //newItem.node = newNode;//(*roots)[iroot];
-
-            std::vector<boost::dynamic_bitset<> > *newbitset = new std::vector<boost::dynamic_bitset<> >();
-            newbitset->push_back(*bitset);
-            //newItem.bitset = newbitset;//bitset;
-
-            std::vector<int> *newontoID = new std::vector<int>();
-            newontoID->push_back(iOnto);
-            newItem.ontoID = newontoID;//iOnto;
-            max_heap->push(newItem);
-            OPEN_heap->push(newItem);
-        }
-  */  }
+    }
 }
 
 
@@ -2620,16 +2063,11 @@ double BeamTopDown::evaluateF1Score(boost::dynamic_bitset<> *bitset, int *ontoID
     for(int iposExample = 0; iposExample < (*this->POSexamples).size(); ++iposExample)
     {
         boost::dynamic_bitset<> *bitsetExample = (*this->POSexamples)[iposExample][*ontoID];//(*this->POSexamples)[*ontoID][iposExample];
-        //std::cout << "ex " << iposExample;
-        //(*this->POSexamples)[iposExample][*ontoID]->printSemanticPattern(bitset);
         if((*bitset & *bitsetExample).any())
             tp++;
         else
             fn++;
     }
-
-    //std::cout << "tp: " << tp << std::endl;
-    //std::cout << "fn: " << fn << std::endl;
 
     for(int inegExample = 0; inegExample < (*this->NEGexamples).size(); ++inegExample)
     {
@@ -2637,8 +2075,6 @@ double BeamTopDown::evaluateF1Score(boost::dynamic_bitset<> *bitset, int *ontoID
         if((*bitset & *bitsetExample).any())
             fp++;
     }
-
-    //std::cout << "fp: " << fp << std::endl << std::endl;
 
     return (2*tp)/(double)(2*tp + fp + fn);
 }
@@ -2650,15 +2086,10 @@ double BeamTopDown::evaluateF1Score(conjunction_max *item)
     int fn = 0;
     for(int iposExample = 0; iposExample < (*this->POSexamples).size(); ++iposExample)
     {
-        //boost::dynamic_bitset<> *bitsetExample = (*this->POSexamples)[iposExample][*ontoID];//(*this->POSexamples)[*ontoID][iposExample];
-        //std::cout << "ex " << iposExample;
-        //(*this->POSexamples)[iposExample][*ontoID]->printSemanticPattern(bitset);
         bool isCovered = false;
-        //std::cout << "bit count: ";
         for(int ibitset = 0; ibitset < item->bitset.size(); ++ibitset)
         {
             //at least one time evaluated
-            //std::cout << (*item).bitset[ibitset].count() << " ";
             if((*item).bitset[ibitset].any())
             {
                 //example is covered
@@ -2674,7 +2105,6 @@ double BeamTopDown::evaluateF1Score(conjunction_max *item)
                 }
             }
         }
-        //std::cout << std::endl;
         if(isCovered)
             tp++;
         else
@@ -2687,13 +2117,9 @@ double BeamTopDown::evaluateF1Score(conjunction_max *item)
         item->N = 0;
         return 0;
     }
-    //std::cout << "tp: " << tp << std::endl;
-    //std::cout << "fn: " << fn << std::endl;
 
     for(int inegExample = 0; inegExample < (*this->NEGexamples).size(); ++inegExample)
     {
-        //boost::dynamic_bitset<> *bitsetExample = (*this->NEGexamples)[inegExample][*ontoID];
-
         bool isCovered = false;
         for(int ibitset = 0; ibitset < item->bitset.size(); ++ibitset)
         {
@@ -2718,8 +2144,6 @@ double BeamTopDown::evaluateF1Score(conjunction_max *item)
             fp++;
     }
 
-    //std::cout << "fp: " << fp << std::endl << std::endl;
-    //std::cout << "tp: " << tp << " fn: " << fn << " fp: " << fp << std::endl;
 
     item->P = tp;
     item->N = fp;
@@ -2727,40 +2151,14 @@ double BeamTopDown::evaluateF1Score(conjunction_max *item)
     return (2*tp)/(double)(2*tp + fp + fn);
 }
 
-/*
-int countCover(boost::dynamic_bitset<> *example, boost::dynamic_bitset<> *classMask, int *P, int *N)
-{
-        *P = 0; *N = 0;
-        boost::dynamic_bitset<> negMask = ~(*classMask);
-        boost::dynamic_bitset<> tmp;
-        tmp = *example;
-        tmp &= (*classMask); //POS bitset
-        for(int i = 0; i < tmp.size(); ++i)
-        {
-                if(tmp.test(i))
-                        ++(*P);
-        }
-        tmp = *example;
-        tmp &= negMask;	//NEG bitset
-        for(int i = 0; i < tmp.size(); ++i)
-        {
-                if(tmp.test(i))
-                        ++(*N);
-        }
-        return (*P)-(*N);
-}
-*/
 bool BeamTopDown::generateNewConjunctions(std::priority_queue<conjunction_max> *OPEN_heap, std::priority_queue<conjunction_max> *max_heap, std::vector<boost::dynamic_bitset<> > *CLOSED)//, vector<boost::dynamic_bitset<> > *featureBitSet, boost::unordered_map<string, int> *CLOSED, boost::dynamic_bitset<> *classMask, std::vector<conjunction_max> *baseTerms)
 {
     conjunction_max best = OPEN_heap->top();
     OPEN_heap->pop();
-    int debug = 0;
-    //std::cout << "generate BEST: " << best.node2Specified->onto_ref->getName() << "hypothesis: ";
-    //best.node2Specified->onto_ref->printSemanticPattern(&(best.bitset[best.intNode2Specified]));
+    int debug = 0;    
 
     Node *toSpecified = best.node2Specified;
 
-//    std::cout << "rodic: " << best.object;
     //generate ancestors
     for(std::vector<edge>::iterator iedge = toSpecified->relationship.begin(); iedge != toSpecified->relationship.end(); ++iedge)
     {
@@ -2777,9 +2175,6 @@ bool BeamTopDown::generateNewConjunctions(std::priority_queue<conjunction_max> *
             //not in CLOSED list or has not been in a hypothesis list
             else if(((*CLOSED)[best.intNode2Specified][iedge->end->idNum]) == 0 && best.bitset[best.intNode2Specified][iedge->end->idNum] == 0)
             {
-                //boost::dynamic_bitset<> *newbitset = new boost::dynamic_bitset<>((best.bitset->back()).size(), 0);
-                //best.bitset[best.intNode2Specified]
-                //(*newbitset)[iedge->end->idNum] = 1;  //set new term
                 (*CLOSED)[best.intNode2Specified][iedge->end->idNum] = 1; //set CLOSED
                 (*CLOSED)[best.intNode2Specified][iedge->start->idNum] = 1; //set CLOSED
 
@@ -2792,8 +2187,6 @@ bool BeamTopDown::generateNewConjunctions(std::priority_queue<conjunction_max> *
                 sibling.object = 0;
                 sibling.ontoID = best.ontoID;
 
-                //sibling.bitset[sibling.intNode2Specified].reset();
-
                 sibling.bitset[sibling.intNode2Specified][iedge->start->idNum] = 0;
                 sibling.discovered[sibling.intNode2Specified][iedge->start->idNum] = 1; //already discovered, will be more general
 
@@ -2801,43 +2194,10 @@ bool BeamTopDown::generateNewConjunctions(std::priority_queue<conjunction_max> *
                     std::cout << "edge: " << iedge->start->idNum << " best: " << best.node2Specified->idNum << std::endl;
 
                 sibling.bitset[sibling.intNode2Specified][iedge->end->idNum] = 1; //set current
-                //std::cout << "count new bit: " << sibling.bitset[sibling.intNode2Specified].count() << std::endl;
                 sibling.node2Specified = iedge->end;
-                //sibling.bitset[sibling.intNode2Specified][best.node2Specified->idNum] = 0;
 
                 double actScore = this->evaluateF1Score(&sibling);
                 sibling.object = actScore;
-
-//                std::cout << " " << actScore;
-                //if actual score is worse than parent's, exclude the node
-                //std::cout << "generating new item, score: " << actScore << " previous score: " << best.object << "act node: ";
-                //sibling.node2Specified->onto_ref->printSemanticPattern(&(sibling.bitset[sibling.intNode2Specified]));
-                //std::cout << std::endl;
-
-                //conjunction_max sibling;// = {.object = actScore, .ontoID = best.ontoID, .node = iedge->end, .bitset=newbitset};
-                //std::vector<Node*> *newNode = new std::vector<Node*>(*(best.node));
-                //newNode->back() = iedge->end;//((*roots)[iroot]);
-
-                //std::vector<boost::dynamic_bitset<> > *newbitset2add = new std::vector<boost::dynamic_bitset<> >(*(best.bitset));
-                //newbitset2add->back() = *newbitset;
-                //newItem.bitset = newbitset;//bitset;
-
-                //std::vector<int> *newontoID = new std::vector<int>(*(best.ontoID));
-                //newontoID->back() = iOnto;
-                //newItem.ontoID = newontoID;//iOnto;
-
-
-                //sibling.bitset = newbitset2add;
-                //sibling.node = newNode;
-                //sibling.object = actScore;
-                //sibling.ontoID = newontoID;
-
-                //if(actScore > (best.object - EPS_DOUBLE))
-                 //   OPEN_heap->push(sibling);
-
-                //generate but cannot be in a hypothesis
-                //if(sibling.discovered[sibling.intNode2Specified][iedge->end->idNum] != 1)
-                    //max_heap->push(sibling);
 
                 if(actScore > (best.bestPathScore - EPS_DOUBLE))
                     sibling.bestPathScore = actScore;
@@ -2849,51 +2209,28 @@ bool BeamTopDown::generateNewConjunctions(std::priority_queue<conjunction_max> *
                     std::cout << "score: " << actScore << " id: " << iedge->end->idNum << " onto id|sib|best: " << sibling.intNode2Specified << best.intNode2Specified <<  " best score:" << best.bestPathScore << " siblingbest: " << sibling.bestPathScore << " parent: " << iedge->start->idNum << " ";
                     sibling.node2Specified->onto_ref->printSemanticPattern(&(sibling.bitset[sibling.intNode2Specified]));
                 }
-                //std::cout << std::endl;
 
- //               if(best.discovered[best.intNode2Specified][iedge->end->idNum] == 1)
- //                   OPEN_heap->push(sibling);
- //               else
- //               {
-//                    if(actScore > (best.object - EPS_DOUBLE))
-//                    {
+                double potentialBestScore = (2*sibling.P) / (double)(2*sibling.P + (this->POSexamples->size() - sibling.P));
+                if(debug)
+                    std::cout << " potential: "  << potentialBestScore << " P: " << sibling.P << " N: " << sibling.N;
+                if(potentialBestScore > (best.bestPathScore - EPS_DOUBLE))// || actScore > (best.object - EPS_DOUBLE))
+                {
+                    OPEN_heap->push(sibling);
+                    max_heap->push(sibling);
+                    if(debug)
+                        std::cout << " OK!!";
+                }
+                bool a = potentialBestScore > (best.bestPathScore - EPS_DOUBLE);
+                bool b = actScore > (best.object - EPS_DOUBLE);
 
-
-//                    if(actScore > 0)
-//                    {
-                        double potentialBestScore = (2*sibling.P) / (double)(2*sibling.P + (this->POSexamples->size() - sibling.P));
-                        if(debug)
-                            std::cout << " potential: "  << potentialBestScore << " P: " << sibling.P << " N: " << sibling.N;
-                        if(potentialBestScore > (best.bestPathScore - EPS_DOUBLE))// || actScore > (best.object - EPS_DOUBLE))
-                        {
-                            OPEN_heap->push(sibling);
-                            max_heap->push(sibling);
-                            if(debug)
-                                std::cout << " OK!!";
-                        }
-                        bool a = potentialBestScore > (best.bestPathScore - EPS_DOUBLE);
-                        bool b = actScore > (best.object - EPS_DOUBLE);
-
-                        //if(a != b)
-                        if(debug)
-                        {
-                            std::cout << " - pot cond: " << a << " act cond: " << b;
-                            std::cout << std::endl;
-                        }
-//                    }
-                    //}
-  //              }
-
-                //if(actScore > (best.object - EPS_DOUBLE))
-                //{
-                //)    OPEN_heap->push(sibling);
-                //}
-                //max_heap->push(sibling);
-
+                if(debug)
+                {
+                    std::cout << " - pot cond: " << a << " act cond: " << b;
+                    std::cout << std::endl;
+                }
             }
         }
     }
-//    std::cout << std::endl;
 }
 
 bool BeamTopDown::generateNewConjunctions_COMPLETE(std::priority_queue<conjunction_max> *OPEN_heap, std::priority_queue<conjunction_max> *max_heap, std::vector<boost::dynamic_bitset<> > *CLOSED)//, vector<boost::dynamic_bitset<> > *featureBitSet, boost::unordered_map<string, int> *CLOSED, boost::dynamic_bitset<> *classMask, std::vector<conjunction_max> *baseTerms)
@@ -2948,285 +2285,10 @@ bool BeamTopDown::generateNewConjunctions_COMPLETE(std::priority_queue<conjuncti
 
 }
 
-/*
-string getPrintableConjunction(conjunction_max best, std::vector<string> *features)
-{
-        int size = best.toExpand.size();
-        string rules = "";
-        vector<string> rule;
-        for(int i = 0; i < size; ++i)
-        {
-                if(best.whichTerms.test(i))
-                        rule.push_back(features->at(i));
-        }
-        for(vector<string>::iterator irule = rule.begin(); irule != rule.end(); ++irule)
-        {
-                rules += *irule;
-                if(irule + 1 != rule.end())
-                        rules += " \u2227 ";
-        }
-
-        rules += " => 1";
-        return rules;
-}
-
-string generateHashKey(boost::dynamic_bitset<> *best)
-{
-        int size = best->size();
-        string key = "";
-        for(int i = 0; i < size; ++i)
-        {
-                if(best->test(i))
-                {
-                        key += to_string(i) +",";
-                }
-        }
-        return key;
-}
-
-void eraseCoveredExamples(conjunction_max best, vector<boost::dynamic_bitset<> > *featureBitSet, boost::dynamic_bitset<> *classMask)
-{
-        boost::dynamic_bitset<> newClassMask;
-        vector<boost::dynamic_bitset<> > newFeatureBit;
-        newClassMask.resize(best.examples.size(), false);
-        int new_size = 0;
-        for(int ibit = 0; ibit < best.examples.size(); ++ibit)
-        {
-                if(!(best.examples.test(ibit)))
-                {
-                        newClassMask.set(new_size, (*classMask).test(ibit));
-                        ++new_size;
-                }
-        }
-        newClassMask.resize(new_size);
-        *classMask = newClassMask;
-
-        for(int i = 0; i < featureBitSet->size(); ++i)
-        {
-                //cout << "featurebit: " << i << endl;
-                boost::dynamic_bitset<> newFBit;
-                newFBit.resize(best.examples.size(), false);
-                int new_size = 0;
-                for(int ibit = 0; ibit < best.examples.size(); ++ibit)
-                {
-                        //cout << "bit: " << ibit << endl;
-                        if(!(best.examples.test(ibit)))
-                        {
-                                newFBit.set(new_size, (*featureBitSet)[i].test(ibit));
-                                ++new_size;
-                        }
-                }
-                newFBit.resize(new_size);
-                newFeatureBit.push_back(newFBit);
-        }
-        *featureBitSet = newFeatureBit;
-}
-
-void countPN(boost::dynamic_bitset<> *bitset, int *P, int *N)
-{
-        *P = 0; *N = 0;
-        for(int i = 0; i < bitset->size(); ++i)
-        {
-                if(bitset->test(i))
-                        ++(*P);
-                else
-                        ++(*N);
-        }
-}
-*/
 bool BeamTopDown::isBetter(conjunction_max *bestConjunction, conjunction_max *max_heap_top)
 {
         if(bestConjunction->object < max_heap_top->object)
                 return true;
         return false;
 }
-/*
-void printSettings()
-{
-        cout << "[train " << TRAIN  << "]" << endl;
-        if(TEST_FLAG)
-                cout << "[test " << TEST << "]" << endl;
-        cout << "[max_rules " << RULES_LIMIT << "]" << endl;
-        if(ITERATE_LIMIT == INT_MAX)
-                cout << "[max_iteration UNLIMITED]" << endl;
-        else
-                cout << "[max_iteration " << ITERATE_LIMIT << "]" << endl;
-        if(QUEUE_UNLIMITED)
-                cout << "[max_queue UNLIMITED]" << endl;
-        else
-                cout << "[max_queue " << QUEUE_LIMIT << "]" << endl;
-        if(VERBOSE)
-                cout << "[VERBOSE mode]" << endl;
-        if(DEBUG)
-                cout << "[DEBUG mode]" << endl;
-        if(ROC_FLAG)
-                cout << "[generateRFile " << ROC << "]" << endl;
-        cout << endl;
-}
-
-int countTrue(boost::dynamic_bitset<> *bitset)
-{
-        int count = 0;
-        for(int i = 0; i < bitset->size(); ++i)
-        {
-                if(bitset->test(i))
-                        ++count;
-        }
-        return count;
-}
-
-statistics evaluateDataset(MODE mod, vector<boost::dynamic_bitset<> > *featureBitSet, boost::dynamic_bitset<> *classMask, std::vector<conjunction_max> *rules)
-{
-        boost::dynamic_bitset<> sumCoverage;
-        vector<boost::dynamic_bitset<> > constructedRules;
-        sumCoverage.resize(classMask->size(), false);
-        for(std::vector<conjunction_max>::iterator irule = rules->begin(); irule != rules->end(); ++irule)
-        {
-                boost::dynamic_bitset<> res;
-                res.resize(classMask->size(), true);
-                //create a rule
-                 for(int ibit = 0; ibit < (*irule).whichTerms.size(); ++ibit)
-                 {
-                         if((*irule).whichTerms.test(ibit))
-                                res &= (*featureBitSet)[ibit];
-                 }
-                //res &= *classMask;
-                if(mod == TRAIN_MODE)
-                {
-                        boost::dynamic_bitset<> acc_res = res;
-                        acc_res &= *classMask;
-                        (*irule).acc = countTrue(&acc_res) / double (countTrue(&res));
-                }
-                else
-                        constructedRules.push_back(res);
-
-                sumCoverage |= res;
-
-                cout.precision(5);
-                cout << "ACC " << (*irule).acc << endl;
-        }
-
-        std::vector<double> confidence;
-        if(mod == TEST_MODE)
-        {
-                for(int ibit = 0; ibit < sumCoverage.size(); ++ibit)
-                {
-                        int count = 0;
-                        double sum = 0.0;
-                        for(int irule = 0; irule < constructedRules.size(); ++irule)
-                        {
-                                if(sumCoverage.test(ibit) && constructedRules[irule].test(ibit))
-                                {
-                                        sum += rules->at(irule).acc;
-                                        count++;
-                                }
-                        }
-                        double conf;
-                        if(count == 0)
-                                conf = 0.0001;
-                        else
-                                conf = sum/ double(count);
-                        confidence.push_back(conf);
-                }
-        }
-
-        boost::dynamic_bitset<> TP = sumCoverage;
-        boost::dynamic_bitset<> FP = sumCoverage;
-        boost::dynamic_bitset<> TN = ~sumCoverage;
-        boost::dynamic_bitset<> FN = sumCoverage;
-
-        sumCoverage &= *classMask;
-
-        TP &= *classMask; //count true
-        TN &= ~(*classMask);//count true
-
-        boost::dynamic_bitset<> FPtmp = FP;
-        FPtmp ^= *classMask;
-        FP &=  FPtmp; //count true
-
-        FN ^= *classMask;
-        FN &=  *classMask; //count true
-
-        statistics dataset = {.TP = countTrue(&TP), .FP = countTrue(&FP), .FN = countTrue(&FN), .TN = countTrue(&TN), .ACC = 0, .confidence = confidence};
-        dataset.ACC = (dataset.TP+dataset.TN)/ double (dataset.FP+dataset.FN+dataset.TP+dataset.TN);
-        return dataset;
-}
-
-*/
-
-/*
-void generateRFile(vector<boost::dynamic_bitset<> > *featureBitSet, boost::dynamic_bitset<> *classMask, std::vector<conjunction_max> *rules, statistics *test)
-{
-        string rtext = "if(!library(ROCR, logical.return = TRUE))\
-                                        {\
-                                          install.packages(ROCR)\
-                                        }\\n";
-
-        boost::dynamic_bitset<> sumCoverage;
-        sumCoverage.resize(classMask->size(), false);
-        for(std::vector<conjunction_max>::iterator irule = rules->begin(); irule != rules->end(); ++irule)
-        {
-                boost::dynamic_bitset<> res;
-                res.resize(classMask->size(), true);
-                //create a rule
-                 for(int ibit = 0; ibit < (*irule).whichTerms.size(); ++ibit)
-                 {
-                         if((*irule).whichTerms.test(ibit))
-                                res &= (*featureBitSet)[ibit];
-                 }
-                //res &= *classMask;
-                sumCoverage |= res;
-        }
-
-        string predictors;// = "pr <- c(";
-        string labels;// = "lb <- c(";
-        string vectors;
-
-        for(int i = 0; i < sumCoverage.size(); ++i)
-        {
-                predictors = to_string(test->confidence.at(i));
-
-                if(classMask->test(i))
-                        labels = "1";
-                else
-                        labels = "0";
-                vectors += predictors + "," + labels + "\n";
-        }
-        //predictors.pop_back();
-        //predictors += ")";
-        //labels.pop_back();
-        //labels += ")";
-
-        //rtext += predictors + "\n";
-        //rtext += labels + "\n";
-
-        rtext += "if(!library('ROCR', logical.return = TRUE))\n\
-{\n\
-  install.packages('ROCR')\n\
-}\n\
-library('ROCR')\n\
-\n\
-file <- read.csv(file = '" + ROC + "_data', header = FALSE, stringsAsFactors = FALSE)\n\
-\n\
-png()\n\
-pred <- prediction( file[,1], file[,2])\n\
-perf <- performance(pred,'tpr','fpr')\n\
-plot(perf)\n\
-dev.off()\n\
-\n\
-aucperf <- performance(pred, measure = 'auc', x.measure = 'cutoff')\n\
-cat('AUC =',deparse(as.numeric(aucperf@y.values)))";
-
-        //write to file
-        std::ofstream out(ROC);
-        out << rtext;
-        out.close();
-
-        std::ofstream outData(ROC+"_data");
-        outData << vectors;
-        outData.close();
-
-
-}
-*/
 

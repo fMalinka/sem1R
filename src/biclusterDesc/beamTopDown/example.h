@@ -11,8 +11,8 @@
 class Example
 {
 public:    
-    Example(int kbics, arma::mat *armaData, std::vector<Ontology *> *refOntologies);
-    Example(arma::mat *testarmaData, boost::unordered_map<std::string, std::vector<std::vector<std::string> > > *rowTestOntologyDesc, boost::unordered_map<std::string, std::vector<std::vector<std::string> > > *colTestOntologyDesc, std::vector<Ontology *> *refOntologies);
+    Example(int kbics, arma::mat *armaData, std::vector<Ontology *> *refOntologies, int verbose);
+    Example(arma::mat *testarmaData, boost::unordered_map<std::string, std::vector<std::vector<std::string> > > *rowTestOntologyDesc, boost::unordered_map<std::string, std::vector<std::vector<std::string> > > *colTestOntologyDesc, std::vector<Ontology *> *refOntologies, int verbose);
     ~Example();
 
     void findPositiveExamples(double threshold);
@@ -59,6 +59,7 @@ public:
 private:
     double threshold;
     int kbics;
+    int verbose;
     arma::mat *armaData;
     //std::vector<paretoSet> *myparetoSet;
     std::vector<Ontology *> *refOntologies;
