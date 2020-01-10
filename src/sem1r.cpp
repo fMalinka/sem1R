@@ -1,6 +1,5 @@
 //#include <Rcpp.h>
 
-#include "RcppMLPACK.h"
 #include "ontologyParser.h"
 #include "ontology.h"
 #include "hypothesis.h"
