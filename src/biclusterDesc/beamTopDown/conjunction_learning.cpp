@@ -25,15 +25,17 @@ int ROC_FLAG = 0;
 //        return boost::hash_value(bs.m_bits);
 //    }
 //}
+/*
 #define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
 namespace boost {
     template <typename B, typename A>
-    std::size_t hash_value(const boost::dynamic_bitset<B, A>& bs) {
+    inline std::size_t hash_value(const boost::dynamic_bitset<B, A>& bs) {
         std::vector<B, A> v;
         boost::to_block_range(bs, std::back_inserter(v));
         return boost::hash_value(v);
     }
 }
+*/
 
 BeamTopDown::BeamTopDown(arma::mat *data, std::vector<Ontology *> *refOntologies, std::vector< std::vector<boost::dynamic_bitset<>* > > *POSexamples, std::vector< std::vector<boost::dynamic_bitset<>* > > *NEGexamples, std::vector<boost::dynamic_bitset<> > *enrichItems)
 {
