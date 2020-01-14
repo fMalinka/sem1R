@@ -54,8 +54,12 @@ library(sem1R)
 Running example that we present here comes from [1] and shows a gene expression over Drosophila melanogaster imaginal discs. All necessary files for this example are located at [example](example) folder.
 
 ### Data matrix
+A file [discMatrix.csv](example/discMatrix.csv) contains binary information about gene expression over imaginal discs of Drosophila melanogaster. The matrix is two-dimensional where rows represent genes and columns represent samples (locations). Each dimension has own identifier, i.e. genes are described by FBgn (FlyBase) identifiers and columns by your notation. Ones in the matrix mean "expressed" and zeros mean "non-expressed" in the given positions. Obviously, process of binarization have to be done if your data are not in the binary format.
 
 ### Ontologies
+Ontologies are the second type of input that has to be given to your algorithm. 
+
+### Connection between the data matrix and the ontologies
 
 ### Run sem1R
 
