@@ -51,14 +51,13 @@ library(sem1R)
 
 
 ## Running the example
+Running example that we present here comes from [1] and shows a gene expression over Drosophila melanogaster imaginal discs. All necessary files for this example are located at [example](example) folder.
 
-Explain how to run the automated tests for this system
+### Data matrix
 
-## Data matrix
+### Ontologies
 
-## Ontologies
-
-## Run sem1R
+### Run sem1R
 
 ```
 Give an example
