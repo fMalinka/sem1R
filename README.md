@@ -1,15 +1,16 @@
 # sem1R - Concept single rule learning with an ontology-based refinement operator
 
-sem1R is a machine learning algorithm that finds interesting, hidden, and non-trivial patterns in two-dimensional kind of data. The algorithm generates 
+sem1R is a machine learning algorithm that finds interesting, hidden, and non-trivial patterns in omics data. The algorithm produces a set of semantical prediction rules that form data into clusters or biclusters, this depends on a type of ontologies. Here, we distingues between two types of ontologies: an ontology describing rows (e.g. genes) an columns (e.g. samples). Practically, for gene expression data, where rows represent genes and column represent samples, we reccomend to use Gene ontology or any pathway ontologies as a row ontology. Choosing a proper column ontology is depending on a type of experiment, e.g. OBO Foundry provides almost two hundreds and many of them are domain specific so some anatomical ontologies can be used as well.
+
+The sem1R is based on rule learning methods, where two reduction procedures were added and that make the algorithm extremely fast and efficient in comparison with traditional approach. In additional, it is relative easy to use, because all important methods are included into the package.
 
 ## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+The algorithm is implemented in C++ and provided as `R` package. The following instructions will show you how to install all prerequisites and the sem1R package as well into your local machine. Afterwards, we will demonstrate the sem1R on real gene expression dataset.
 
 ### Prerequisites
 We required to use R in version 3.0.2.
 All prerequisites R packages that are needed for the sem1R package are the following:
-`Rcpp`, `RcppProgress`, `RcppArmadillo`, and `BH`. All of these packages come from CRAN, so install them by `install.packages` function in R.
+`Rcpp (>= 0.12.6)`, `RcppProgress`, `RcppArmadillo (>= 0.7.800.2.0)`, and `BH (>= 1.72.0-3)`. All of these packages come from CRAN, so install them by `install.packages` function in R.
 
 Or, for easier installation we recommend to install 'devtools' that can download and install the project instantly from gitHub using only one command.
 
@@ -48,9 +49,15 @@ library(sem1R)
 ```
 
 
-## Running the tests
+## Running the example
 
 Explain how to run the automated tests for this system
+
+## Data matrix
+
+## Ontologies
+
+## Run sem1R
 
 ```
 Give an example
