@@ -35,6 +35,7 @@ public:
     arma::mat* getArmaDataset() {return &(this->armaData);}
 
     Rcpp::List findDescription();
+    Rcpp::List computeTermsEnrichment();
 
     double significantTest(int iterate, Rcpp::NumericVector tmpGene, Rcpp::NumericVector tmpSample);    
     Rcpp::NumericMatrix countDist(Rcpp::NumericMatrix bicMatrix);
@@ -117,6 +118,7 @@ private:
     void buildTrainingExamples(std::vector< std::vector<boost::dynamic_bitset<>* > > *examples, arma::umat *indexes, std::vector<Ontology *> *refOntologies);
     void buildTrainingExamples(std::vector< std::vector<boost::dynamic_bitset<>* > > *examples, arma::umat *indexMatrix, std::vector<Ontology *> *refOntologies, std::vector<boost::unordered_map<int, bool> > *indexPosExamples);
 };
+
 RCPP_MODULE(mod_data)
 {
     class_<sem1R>("sem1R")
@@ -131,7 +133,8 @@ RCPP_MODULE(mod_data)
     .method("createCOLOntology", &sem1R::createCOLOntology)
     .method("createTestROWOntology", &sem1R::createTestROWOntology)
     .method("createTestCOLOntology", &sem1R::createTestCOLOntology)
-    .method("significantTest", &sem1R::significantTest)    
+    .method("significantTest", &sem1R::significantTest)
+    .method("computeTermsEnrichment", &sem1R::computeTermsEnrichment)
     .field("filterTh", &sem1R::filterTh)
     .field("ruleDepth", &sem1R::ruleDepth)
     .field("signTH", &sem1R::signTH)
@@ -522,6 +525,39 @@ double sem1R::significantTest(int iterate, Rcpp::NumericVector tmpGene, Rcpp::Nu
 
     }
     return (double)betterRandom/iterate;
+}
+
+Rcpp::List sem1R::computeTermsEnrichment()
+{
+    std::vector<Ontology *> refOntologies;
+
+    for(boost::unordered_map<std::string, Ontology *>::iterator it = this->rowOntology.begin(); it != this->rowOntology.end(); ++it)
+    {
+        refOntologies.push_back(it->second);
+    }
+    for(boost::unordered_map<std::string, Ontology *>::iterator it = this->colOntology.begin(); it != this->colOntology.end(); ++it)
+    {
+        refOntologies.push_back(it->second);
+    }
+
+    //RULE LEARNING
+    arma::mat armaDataTMP = this->armaData;
+
+    Rcpp::CharacterVector dataRownames;
+    Rcpp::CharacterVector dataColnames;
+
+    if(!Rf_isNull(Rcpp::rownames(this->data)) || !Rf_isNull(Rcpp::colnames(this->data)))
+    {
+            dataRownames = Rcpp::rownames(this->data);
+            dataColnames = Rcpp::colnames(this->data);
+    }
+
+    printParetoSettings();
+
+    Example bicExamples(0, &(armaDataTMP), &(refOntologies), this->verbose);
+    bicExamples.findPositiveExamples();
+    bicExamples.findNegativeExamples();
+    return bicExamples.getEnrichTerms();
 }
 
 Rcpp::List sem1R::findDescription()

@@ -28,6 +28,7 @@ public:
     Rcpp::DataFrame getEnrichTablev2(int bic, std::vector<Node *> *enrichNodes);
     mydataframe getEnrichTablev2bitset(int bic, std::vector<Node *> *enrichNodes);
     mydataframe getEnrichTablev2Sigbitset(int bic, std::vector<Node *> *enrichNodes);
+    Rcpp::List getEnrichTerms();
     Rcpp::DataFrame getEnrichTablev2Ancestors(int bic, std::vector<Node *> *enrichNodes, int minth);
     mydataframe getEnrichTablev2Ancestorsbitset(int bic, std::vector<Node *> *enrichNodes, int minth);
     mydataframe getEnrichTablev2AncestorsSigbitset(int bic, std::vector<Node *> *enrichNodes, int minth);

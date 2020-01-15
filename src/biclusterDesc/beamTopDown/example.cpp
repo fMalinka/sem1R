@@ -873,6 +873,67 @@ mydataframe Example::getEnrichTablev2bitset(int bic, std::vector<Node *> *enrich
     return newDataTable;
 }
 
+Rcpp::List Example::getEnrichTerms()
+{
+    Rcpp::List enrichmenTerm(refOntologies->size());
+    for(int ionto = 0; ionto < refOntologies->size(); ++ionto)
+    {
+        std::vector<double> pVAL;
+        std::vector<std::string> termID;
+        std::vector<std::string> termDesc;
+        std::vector<int> nPOS;
+        std::vector<int> nNEG;
+
+        int nterm = (*refOntologies)[ionto]->getOntologyParser()->getTermsNumber();
+        boost::dynamic_bitset<> mynewclass(this->POSexamples.size() + this->NEGexamples.size(), 0);
+        for(int iexample = 0; iexample < this->POSexamples.size(); ++iexample)
+        {
+            mynewclass[iexample] = 1;
+        }
+
+        for(int interm = 0; interm < nterm; ++interm)
+        {
+            //positive examples
+            boost::dynamic_bitset<> mycovered(mynewclass.size(), 0);
+            for(int iexample = 0; iexample < this->POSexamples.size(); ++iexample)
+            {
+                     mycovered[iexample] = (*(this->POSexamples[iexample][ionto]))[interm];//actOnto->getSemanticPatterns();
+            }
+
+            //negative examples
+            for(int iexample = 0; iexample < this->NEGexamples.size(); ++iexample)
+            {
+                    mycovered[this->POSexamples.size() + iexample] = (*(this->NEGexamples[iexample][ionto]))[interm];//actOnto->getSemanticPatterns();
+            }
+
+            double tp = (mycovered & mynewclass).count();	//(*vector & *classVector).count()
+            double fp = (mycovered & ~(mynewclass)).count();	//(*vector & ~(*classVector)).count()
+            double posExamples = mynewclass.count();
+            double negExamples = (~(mynewclass)).count();
+
+            double res1 = 0;
+            if(tp > 0 && posExamples > 0)
+                res1 = tp * log2((tp/(tp+fp))/(posExamples/(posExamples+negExamples)));
+            double res2 = 0;
+            if(fp >0 && negExamples > 0)
+                res2 = fp * log2((fp/(tp+fp))/(negExamples/(posExamples+negExamples)));
+            pVAL.push_back(2*(res1+res2));
+
+            //Rcpp::Rcout << "pval: " << 2*(res1+res2) << " tp: " << tp << " fp: " << fp << " pos: " << posExamples << " neg: " << negExamples  << std::endl;
+
+            Node *myterm = (*refOntologies)[ionto]->getOntologyParser()->getNodesByPosition(interm);
+            termID.push_back(myterm->id);
+            termDesc.push_back(myterm->name);
+        }
+
+        Rcpp::DataFrame tableEnrich = Rcpp::DataFrame::create(Rcpp::Named("id") =  termID, Rcpp::Named("desc") = termDesc, Rcpp::Named("tstat") = pVAL);
+        enrichmenTerm[ionto] = tableEnrich;
+
+    }
+    return enrichmenTerm;
+}
+
+
 mydataframe Example::getEnrichTablev2Sigbitset(int bic, std::vector<Node *> *enrichNodes)
 {	
     std::vector<boost::dynamic_bitset<> > enrichPropositionTable;
