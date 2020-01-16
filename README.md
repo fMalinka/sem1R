@@ -1,4 +1,4 @@
-# sem1R - Concept single rule learning with an ontology-based refinement operator
+# sem1R - Concept rule learning with and ontology-based refinement operator inducing semantic rule from omics data
 
 <img align="right" width="200" src="sem1r_logo_col.png">
 <p style="text-align: justify">sem1R is a machine learning algorithm that finds interesting, hidden, and non-trivial patterns in omics data. The algorithm produces a set of semantical prediction rules that form data into clusters or biclusters, this depends on a type of ontologies. Here, we distingues between two types of ontologies: an ontology describing rows (e.g. genes) an columns (e.g. samples). Practically, for gene expression data, where rows represent genes and column represent samples, we recommend to use Gene ontology or any pathway ontologies as a row ontology. Choosing a proper column ontology is depending on a type of experiment, e.g. OBO Foundry provides almost two hundreds and many of them are domain specific so some anatomical ontologies can be used as well.
@@ -36,14 +36,14 @@ Run the terminal, go to the folder that you have already choosen and install all
 cd /my/path/to/package
 R CMD build .
 ```
-The package in tar.gz format will be named as `sem1R_version.tar.gz'.
+The package in tar.gz format will be named as `sem1R_[version].tar.gz'. The concrete name depends on the package version.
 Then, install the sem1R package.
 
 ```
-R CMD INSTALL sem1R_version.tar.gz
+R CMD INSTALL sem1R_[version].tar.gz
 ```
 
-And finally, check whether the sem1R package was installed.
+And finally, check whether the sem1R package has been installed.
 Run R and load the package.
 ```
 library(sem1R)
@@ -60,6 +60,7 @@ A file [discMatrix.csv](example/discMatrix.csv) contains binary information abou
 Ontologies are the second type of input that has to be given to your algorithm. Ontology has to be in OBO format (https://owlcollab.github.io/oboformat/doc/GO.format.obo-1_4.html) and relationships of terms must be acyclic. For many interesting ontologies look at OBO Foundry (http://obofoundry.org/). In our running example, we provide two type of different ontologies. Gene ontology, located at [example/go-basic.obo](example/go-basic.obo), aims to rows of the data matrix and FBBT ontology (http://obofoundry.org/ontology/fbbt.html), located at [example/fbbt-simple.obo](example/fbbt-simple.obo), focuses on the columns.
 
 ### Connection between the data matrix and the ontologies
+Now, the last step is to established a connection between our data matrix and all given ontologies. Especially for Gene ontology, making the connection is quite easy.
 
 ### Run sem1R
 
@@ -93,20 +94,24 @@ mysem1R$minLevel <- 3
 myhypothesis <- mysem1R$findDescription()
 ```
 
-The source code fo this example you can find at [example_disc_auc.R](example_disc_auc.R).
+The whole source code of this example you can find at [example_disc_auc.R](example_disc_auc.R).
 
 ## Authors
 
-* **František Malinka** - *Initial work*
+* **František Malinka**
+
+## Citation
+Cite please:
+
+Malinka, F., Zelezny, F., Klema, J. Concept rule learning with and ontology-based refinement operator inducing semantic rule from omics data. Unpublished.
+
+Kléma, J., Malinka, F. & železný, F. Semantic biclustering for finding local, interpretable and predictive expression patterns. BMC Genomics 18, 752 (2017) doi:10.1186/s12864-017-4132-5
+
+## Acknowledgments
+
+* Jiri Klema for his supervising (http://ida.felk.cvut.cz/klema/)
 
 ## License
 
 This project is licensed under the MIT License.
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
-
 
