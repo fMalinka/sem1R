@@ -1,7 +1,7 @@
 # sem1R - Concept single rule learning with an ontology-based refinement operator
 
 <img align="right" width="200" src="sem1r_logo_col.png">
-<p style="text-align: justify">sem1R is a machine learning algorithm that finds interesting, hidden, and non-trivial patterns in omics data. The algorithm produces a set of semantical prediction rules that form data into clusters or biclusters, this depends on a type of ontologies. Here, we distingues between two types of ontologies: an ontology describing rows (e.g. genes) an columns (e.g. samples). Practically, for gene expression data, where rows represent genes and column represent samples, we reccomend to use Gene ontology or any pathway ontologies as a row ontology. Choosing a proper column ontology is depending on a type of experiment, e.g. OBO Foundry provides almost two hundreds and many of them are domain specific so some anatomical ontologies can be used as well.
+<p style="text-align: justify">sem1R is a machine learning algorithm that finds interesting, hidden, and non-trivial patterns in omics data. The algorithm produces a set of semantical prediction rules that form data into clusters or biclusters, this depends on a type of ontologies. Here, we distingues between two types of ontologies: an ontology describing rows (e.g. genes) an columns (e.g. samples). Practically, for gene expression data, where rows represent genes and column represent samples, we recommend to use Gene ontology or any pathway ontologies as a row ontology. Choosing a proper column ontology is depending on a type of experiment, e.g. OBO Foundry provides almost two hundreds and many of them are domain specific so some anatomical ontologies can be used as well.
 
 The sem1R is based on rule learning methods, where two reduction procedures were added and that make the algorithm extremely fast and efficient in comparison with traditional approach. In additional, it is relative easy to use, because all important methods are included into the package.</p>
 
@@ -57,15 +57,43 @@ Running example that we present here comes from [1] and shows a gene expression 
 A file [discMatrix.csv](example/discMatrix.csv) contains binary information about gene expression over imaginal discs of Drosophila melanogaster. The matrix is two-dimensional where rows represent genes and columns represent samples (locations). Each dimension has own identifier, i.e. genes are described by FBgn (FlyBase) identifiers and columns by your notation. Ones in the matrix mean "expressed" and zeros mean "non-expressed" in the given positions. Obviously, process of binarization has to be done if your data are not in the binary format.
 
 ### Ontologies
-Ontologies are the second type of input that has to be given to your algorithm. 
+Ontologies are the second type of input that has to be given to your algorithm. Ontology has to be in OBO format (https://owlcollab.github.io/oboformat/doc/GO.format.obo-1_4.html) and relationships of terms must be acyclic. For many interesting ontologies look at OBO Foundry (http://obofoundry.org/). In our running example, we provide two type of different ontologies. Gene ontology, located at [example/go-basic.obo](example/go-basic.obo), aims to rows of the data matrix and FBBT ontology (http://obofoundry.org/ontology/fbbt.html), located at [example/fbbt-simple.obo](example/fbbt-simple.obo), focuses on the columns.
 
 ### Connection between the data matrix and the ontologies
 
 ### Run sem1R
 
 ```
-Give an example
+library(sem1R)
+mysem1R <- new(sem1R)
+mydata <- read.csv("example/discMatrix.csv", header = TRUE, check.names = FALSE, row.names = 1)
+mydata <- as.matrix(mydata)
+#get onto Desc
+ontoDesc <- PrepareOntologyDesc(mydata, geneASOC = "example/gene_association.fb", colCSV = "example/initsegmentFBbtWithoutComments.csv")
+
+#library(lattice)
+#levelplot(as.matrix(mydata))
+
+mysem1R$setDataset(mydata)
+#load Ontology
+rowOntoPath <- "example/go-basic.obo"
+colOntoPath <- "example/fbbt-simple.obo"
+mysem1R$createCOLOntology("FBGN", colOntoPath, ontoDesc$col)
+mysem1R$createROWOntology("GO", rowOntoPath, ontoDesc$row)
+
+mysem1R$ruleFormat <- "both"
+
+mysem1R$filterTh <- 100
+mysem1R$objective <- "auc"
+
+mysem1R$ruleDepth <- 9
+mysem1R$nrules <- 10
+mysem1R$featureSelectionMethod <- 0
+mysem1R$minLevel <- 3
+myhypothesis <- mysem1R$findDescription()
 ```
+
+The source code fo this example you can find at [example_disc_auc.R](example_disc_auc.R).
 
 ## Authors
 
