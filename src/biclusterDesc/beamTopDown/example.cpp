@@ -876,9 +876,11 @@ mydataframe Example::getEnrichTablev2bitset(int bic, std::vector<Node *> *enrich
 Rcpp::List Example::getEnrichTerms()
 {
     Rcpp::List enrichmenTerm(refOntologies->size());
+    std::vector<std::string> ontologyNames(refOntologies->size());
     for(int ionto = 0; ionto < refOntologies->size(); ++ionto)
     {
-        std::vector<double> pVAL;
+        std::vector<double> chistat;
+        std::vector<double> pval;
         std::vector<std::string> termID;
         std::vector<std::string> termDesc;
         std::vector<int> nPOS;
@@ -917,8 +919,10 @@ Rcpp::List Example::getEnrichTerms()
             double res2 = 0;
             if(fp >0 && negExamples > 0)
                 res2 = fp * log2((fp/(tp+fp))/(negExamples/(posExamples+negExamples)));
-            pVAL.push_back(2*(res1+res2));
-
+            chistat.push_back(2*(res1+res2));
+            pval.push_back(R::pchisq(2*(res1+res2), 1, false, false));
+            nPOS.push_back((int)tp);
+            nNEG.push_back((int)fp);
             //Rcpp::Rcout << "pval: " << 2*(res1+res2) << " tp: " << tp << " fp: " << fp << " pos: " << posExamples << " neg: " << negExamples  << std::endl;
 
             Node *myterm = (*refOntologies)[ionto]->getOntologyParser()->getNodesByPosition(interm);
@@ -926,10 +930,12 @@ Rcpp::List Example::getEnrichTerms()
             termDesc.push_back(myterm->name);
         }
 
-        Rcpp::DataFrame tableEnrich = Rcpp::DataFrame::create(Rcpp::Named("id") =  termID, Rcpp::Named("desc") = termDesc, Rcpp::Named("tstat") = pVAL);
+        Rcpp::DataFrame tableEnrich = Rcpp::DataFrame::create(Rcpp::Named("id") =  termID, Rcpp::Named("desc") = termDesc, Rcpp::Named("chistat") = chistat, Rcpp::Named("pval") = pval, Rcpp::Named("npositive") = nPOS, Rcpp::Named("nnegative") = nNEG);
+        ontologyNames[ionto] =(*refOntologies)[ionto]->getName();
         enrichmenTerm[ionto] = tableEnrich;
 
     }
+    enrichmenTerm.names() = ontologyNames;
     return enrichmenTerm;
 }
 
@@ -979,8 +985,14 @@ mydataframe Example::getEnrichTablev2Sigbitset(int bic, std::vector<Node *> *enr
 			double posExamples = mynewclass.count();
 			double negExamples = (~(mynewclass)).count();
 
-			double res1 = tp * log2((tp/(tp+fp))/(posExamples/(posExamples+negExamples)));
-			double res2 = fp * log2((fp/(tp+fp))/(negExamples/(posExamples+negExamples)));			
+                        //double res1 = tp * log2((tp/(tp+fp))/(posExamples/(posExamples+negExamples)));
+                        //double res2 = fp * log2((fp/(tp+fp))/(negExamples/(posExamples+negExamples)));
+                        double res1 = 0;
+                        if(tp > 0 && posExamples > 0)
+                            res1 = tp * log2((tp/(tp+fp))/(posExamples/(posExamples+negExamples)));
+                        double res2 = 0;
+                        if(fp >0 && negExamples > 0)
+                            res2 = fp * log2((fp/(tp+fp))/(negExamples/(posExamples+negExamples)));
 			pVAL[interm] = 2*(res1+res2);		
 		}
  
@@ -1399,8 +1411,14 @@ mydataframe Example::getEnrichTablev2AncestorsSigbitset(int bic, std::vector<Nod
 			double posExamples = mynewclass.count();
 			double negExamples = (~(mynewclass)).count();
 
-			double res1 = tp * log2((tp/(tp+fp))/(posExamples/(posExamples+negExamples)));
-			double res2 = fp * log2((fp/(tp+fp))/(negExamples/(posExamples+negExamples)));			
+                        //double res1 = tp * log2((tp/(tp+fp))/(posExamples/(posExamples+negExamples)));
+                        //double res2 = fp * log2((fp/(tp+fp))/(negExamples/(posExamples+negExamples)));
+                        double res1 = 0;
+                        if(tp > 0 && posExamples > 0)
+                            res1 = tp * log2((tp/(tp+fp))/(posExamples/(posExamples+negExamples)));
+                        double res2 = 0;
+                        if(fp >0 && negExamples > 0)
+                            res2 = fp * log2((fp/(tp+fp))/(negExamples/(posExamples+negExamples)));
 			pVAL[interm] = 2*(res1+res2);		
 		}
 

@@ -1085,7 +1085,6 @@ std::string BeamTopDown::getPrintableCoverage(newComplex *toPrint, boost::dynami
 
 void BeamTopDown::getCoverage(newComplex *toPrint, boost::dynamic_bitset<> *classVector, int *npos, int *nneg)
 {
-    std::string rulestring = "";
     if(toPrint->rules.size() > 0)
     {
         boost::dynamic_bitset<> rule = toPrint->rules[0]->exampleCovered;
