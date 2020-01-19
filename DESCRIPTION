@@ -1,12 +1,17 @@
 Package: sem1R
 Type: Package
-Title: Concept rule learning with an ontology-based refinement operator
-Version: 1.0
-Date: 2019-12-15
+Title: Concept rule learning with an ontology-based refinement operator inducing semantic rules from omics data
+Version: 0.99.0
+Date: 2020-01-19
 Author: Frantisek Malinka
 Maintainer: Frantisek Malinka to <frantisek.malinka@gmail.com>
-Description: A package for semantic rule induction from omics data.
+Description: This package presents an extremely fast algorithm sem1R that aims to find interesting, non-trivial, hidden and easy-interpretable patterns expressed by semantic rules that are generally induced from omics data in 2-dimensional binary matrix format.
 License: GPL (>= 2)
 Depends: stats, methods, utils, graphics, grDevices, R (>= 3.0.2), Rcpp (>= 0.12.6), RcppProgress
+VignetteBuilder: knitr
+Suggests: BiocStyle, knitr, rmarkdown
 LinkingTo: RcppArmadillo (>= 0.7.800.2.0), BH (>= 1.72.0-3), Rcpp (>= 0.12.6), RcppProgress
 SystemRequirements: GNU make
+URL:  https://github.com/fMalinka/sem1R
+BugReports: https://github.com/fMalinka/sem1R/issues/new
+biocViews: GeneExpression, DifferentialExpression, Classification, Clustering

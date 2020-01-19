@@ -85,10 +85,10 @@ void Ontology::printSemanticPattern(boost::dynamic_bitset<> *bitset)
     {
         if((*bitset)[ibit] == 1)
         {
-            std::cout << this->getOntologyParser()->getNodesByPosition(ibit)->name << "|";
+            Rcpp::Rcout << this->getOntologyParser()->getNodesByPosition(ibit)->name << "|";
         }
     }
-    std::cout << std::endl;
+    Rcpp::Rcout << std::endl;
 }
 
 int Ontology::isCovered(Node *searched, arma::vec *bitset, int *arrayIndex)

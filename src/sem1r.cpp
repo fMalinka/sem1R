@@ -24,50 +24,47 @@ public:
 
     void createROWOntology(std::string name, std::string pathToOntology, Rcpp::List descriptionTerms);
     void createCOLOntology(std::string name, std::string pathToOntology, Rcpp::List descriptionTerms);
-    void createTestROWOntology(std::string name, Rcpp::List descriptionTerms);
-    void createTestCOLOntology(std::string name, Rcpp::List descriptionTerms);
+    //void createTestROWOntology(std::string name, Rcpp::List descriptionTerms);
+    //void createTestCOLOntology(std::string name, Rcpp::List descriptionTerms);
 
-    void loadDatasets();
+    //void loadDatasets();
 
     void setDataset(Rcpp::NumericMatrix data_) {this->data = data_; armaData = as<arma::mat>(data_); pipelineCODE[SET_DATASET] = 1;}
-    void setTestDataset(Rcpp::NumericMatrix data_) {this->testdata = data_; testarmaData = as<arma::mat>(data_);}
-    Rcpp::NumericMatrix getDataset() { return data; }
-    arma::mat* getArmaDataset() {return &(this->armaData);}
+    //Rcpp::NumericMatrix getDataset() { return data; }
+    //arma::mat* getArmaDataset() {return &(this->armaData);}
 
     Rcpp::List findDescription();
     Rcpp::List computeTermsEnrichment();
 
-    double significantTest(int iterate, Rcpp::NumericVector tmpGene, Rcpp::NumericVector tmpSample);    
-    Rcpp::NumericMatrix countDist(Rcpp::NumericMatrix bicMatrix);
-    void combineBiclusters(Rcpp::NumericVector tmpGene1, Rcpp::NumericVector tmpSample1, Rcpp::NumericVector tmpGene2, Rcpp::NumericVector tmpSample2, Rcpp::NumericMatrix data);
+    //double significantTest(int iterate, Rcpp::NumericVector tmpGene, Rcpp::NumericVector tmpSample);
+    //Rcpp::NumericMatrix countDist(Rcpp::NumericMatrix bicMatrix);
+    //void combineBiclusters(Rcpp::NumericVector tmpGene1, Rcpp::NumericVector tmpSample1, Rcpp::NumericVector tmpGene2, Rcpp::NumericVector tmpSample2, Rcpp::NumericMatrix data);
     //void combineBiclusters(Rcpp::NumericVector tmpGene1, Rcpp::NumericVector tmpSample1, Rcpp::NumericVector *tmpGene2, Rcpp::NumericVector *tmpSample2, Rcpp::NumericMatrix *data);
 
-    void printColAncester(std::string fbgnid);
-    void printAllColAncester(std::string fbgnid);
-    void printColTopAncester(std::string fbgnid);
-    Rcpp::NumericMatrix getSimilaritySemanticMatrix(std::string ontologyName);
-    int getXORscore(Rcpp::NumericVector tmpGene, Rcpp::NumericVector tmpSample);
-    int getCorrectscore(Rcpp::NumericVector tmpGene, Rcpp::NumericVector tmpSample);
-    double getSemanticRowscore(Rcpp::NumericVector tmp);
-    double getSemanticColscore(Rcpp::NumericVector tmp);
+    //void printColAncester(std::string fbgnid);
+    //void printAllColAncester(std::string fbgnid);
+    //void printColTopAncester(std::string fbgnid);
+    //Rcpp::NumericMatrix getSimilaritySemanticMatrix(std::string ontologyName);
+    //int getXORscore(Rcpp::NumericVector tmpGene, Rcpp::NumericVector tmpSample);
+    //int getCorrectscore(Rcpp::NumericVector tmpGene, Rcpp::NumericVector tmpSample);
+    //double getSemanticRowscore(Rcpp::NumericVector tmp);
+    //double getSemanticColscore(Rcpp::NumericVector tmp);
     void printParetoSettings();
 
-    Rcpp::List fisher_test_cpp(const Rcpp::NumericMatrix& x, double conf_level);
+    //Rcpp::List fisher_test_cpp(const Rcpp::NumericMatrix& x, double conf_level);
 
 
-    Rcpp::DataFrame getPropositionalDataFrame();
-    Rcpp::DataFrame getEnrichPropositionalDataFrame();
-    Rcpp::DataFrame getEnrichPropositionalDataFrame2();
+   // Rcpp::DataFrame getPropositionalDataFrame();
+   // Rcpp::DataFrame getEnrichPropositionalDataFrame();
+   // Rcpp::DataFrame getEnrichPropositionalDataFrame2();
 
-    Rcpp::LogicalVector getClassLabel();
+    //Rcpp::LogicalVector getClassLabel();
 
-    Rcpp::DataFrame getROCcordinates();
-    Rcpp::LogicalVector getCoveredVector();
+    //Rcpp::DataFrame getROCcordinates();
+    //Rcpp::LogicalVector getCoveredVector();
 
-    int exhaustiveTest;
     int filterTh;
     int ruleDepth;
-    int onlyPosFeatures;
     double signTH;	//siginificance threshold
     std::string objective;
     int nrules;    
@@ -79,11 +76,11 @@ public:
 private:
     boost::unordered_map<std::string, Ontology*> rowOntology;
     boost::unordered_map<std::string, Ontology*> colOntology;    
-    boost::unordered_map<std::string, std::vector<std::vector<std::string> > > rowTestOntologyDesc;
-    boost::unordered_map<std::string, std::vector<std::vector<std::string> > > colTestOntologyDesc;
+    //boost::unordered_map<std::string, std::vector<std::vector<std::string> > > rowTestOntologyDesc;
+    //boost::unordered_map<std::string, std::vector<std::vector<std::string> > > colTestOntologyDesc;
 
     Rcpp::NumericMatrix data;
-    Rcpp::NumericMatrix testdata;
+    //Rcpp::NumericMatrix testdata;
     arma::mat armaData;
     arma::mat testarmaData;
     //std::vector<paretoSet> optimum;
@@ -95,18 +92,18 @@ private:
     Rcpp::DataFrame enrichPropositionTable2;
     mydataframe enrichPropositionTable3;
 
-    int checkTermDescription();
-    void printHypothesis(hypothesis *hyp);
+    //int checkTermDescription();
+    //void printHypothesis(hypothesis *hyp);
     //double evaluate(arma::vec *rowBitset, arma::vec *colBitset, hypothesis *hyp, double (sem1R::*fcePtrEval)(arma::mat *, arma::mat *));
-    std::vector<hypothesis> findNewLGN();
+    //std::vector<hypothesis> findNewLGN();
     //arma::Col<size_t> getAssignmentsKmeans(std::vector<paretoSet> *paretoSet, int kbic);
-    int getPosExamples();
-    int getNegExamples();
-    double getHyperGeometricScore(int *successSample, int *successPop, int *failurePop, int *sampleSize);
+    //int getPosExamples();
+    //int getNegExamples();
+    //double getHyperGeometricScore(int *successSample, int *successPop, int *failurePop, int *sampleSize);
 
     //evaluation functions
-    double myVAR(arma::mat *templ, arma::mat *original);
-    double myXOR(arma::mat *templ, arma::mat *original);
+    //double myVAR(arma::mat *templ, arma::mat *original);
+    //double myXOR(arma::mat *templ, arma::mat *original);
     
     std::string getPrintableRuleID(newComplexStat *toPrint);
     Rcpp::CharacterVector getRuleID(newComplexStat *toPrint);
@@ -126,25 +123,20 @@ RCPP_MODULE(mod_data)
     // expose the default constructor
     .constructor()
 
-    .method("findDescription", &sem1R::findDescription)
-    .method("setDataset", &sem1R::setDataset)
-    .method("setTestDataset", &sem1R::setTestDataset)
-    .method("createROWOntology", &sem1R::createROWOntology)
-    .method("createCOLOntology", &sem1R::createCOLOntology)
-    .method("createTestROWOntology", &sem1R::createTestROWOntology)
-    .method("createTestCOLOntology", &sem1R::createTestCOLOntology)
-    .method("significantTest", &sem1R::significantTest)
-    .method("computeTermsEnrichment", &sem1R::computeTermsEnrichment)
-    .field("filterTh", &sem1R::filterTh)
-    .field("ruleDepth", &sem1R::ruleDepth)
-    .field("signTH", &sem1R::signTH)
-    .field("objective", &sem1R::objective)
-    .field("nrules", &sem1R::nrules)
-    .field("exhaustiveTest", &sem1R::exhaustiveTest)
-    .field("featureSelectionMethod", &sem1R::featureSelectionMethod)
-    .field("minLevel", &sem1R::minLevel)
-    .field("ruleFormat", &sem1R::ruleFormat)
-    .field("verbose", &sem1R::verbose)
+    .method("findDescription", &sem1R::findDescription, "Run the algorithm, find a hypothesis with given parameters.")
+    .method("setDataset", &sem1R::setDataset,  "Set a two-dimensional binary matrix.")
+    .method("createROWOntology", &sem1R::createROWOntology, "Append a row ontology.")
+    .method("createCOLOntology", &sem1R::createCOLOntology, "Append a column ontology.")
+    .method("computeTermsEnrichment", &sem1R::computeTermsEnrichment, "Compute enrichment score for each ontological term.")
+    .field("filterTh", &sem1R::filterTh, "")
+    .field("ruleDepth", &sem1R::ruleDepth, "Maximal length of induced rule.")
+    .field("signTH", &sem1R::signTH, "Minimal value of Chi Square.")
+    .field("objective", &sem1R::objective, "")
+    .field("nrules", &sem1R::nrules, "Maximum number of induced rules.")
+    .field("featureSelectionMethod", &sem1R::featureSelectionMethod, "Type of Feature Selection method.")
+    .field("minLevel", &sem1R::minLevel, "Minimum level of generalization that each term in a rule has to sattisfy.")
+    .field("ruleFormat", &sem1R::ruleFormat, "Format of covered examples.")
+    .field("verbose", &sem1R::verbose, "Print some debug information.")
 ;
 }
 
@@ -152,11 +144,9 @@ sem1R::sem1R()
 {    
     this->filterTh = 2000;
     this->ruleDepth = 2;
-    this->onlyPosFeatures = 1;
     this->signTH = 6.635;
     this->objective = "f1";
     this->nrules = 2;
-    this->exhaustiveTest = 0;
     this->featureSelectionMethod = 0;	/* 0 mincoveref, 1 hypergeometric */
     this->minLevel = -1;
     this->ruleFormat = "both";
@@ -171,7 +161,6 @@ void sem1R::printParetoSettings()
     Rcpp::Rcout << "significance threshold: " << signTH << std::endl;
     Rcpp::Rcout << "objective function: " << objective << std::endl;
     Rcpp::Rcout << "number of rules: " << nrules << std::endl;
-    Rcpp::Rcout << "exhaustive test: " << exhaustiveTest << std::endl;
     Rcpp::Rcout << "featureSelectionMethod: " << featureSelectionMethod << std::endl;
     Rcpp::Rcout << "ruleFormat: " << ruleFormat << std::endl;
 }
@@ -256,6 +245,7 @@ Rcpp::CharacterVector sem1R::getRuleDetail(newComplexStat *toPrint)
     return rule;
 }
 
+/*
 double sem1R::getHyperGeometricScore(int *successSample, int *successPop, int *failurePop, int *sampleSize)
 {
     //http://users.unimi.it/marray/2007/material/day4/Lecture7.pdf
@@ -263,7 +253,8 @@ double sem1R::getHyperGeometricScore(int *successSample, int *successPop, int *f
     int lower = 0;
     return R::phyper(*successSample - 1, *successPop, *failurePop, *sampleSize, lower, log );
 }
-
+*/
+/*
 Rcpp::DataFrame sem1R::getPropositionalDataFrame()
 {
     return this->propositionTable;
@@ -278,7 +269,9 @@ Rcpp::DataFrame sem1R::getEnrichPropositionalDataFrame2()
 {
     return this->enrichPropositionTable2;
 }
+*/
 
+/*
 void sem1R::printColAncester(std::string fbgnid)
 {
     boost::unordered_map<std::string, Node*> *hash = this->colOntology["FBGN"]->getOntologyParser()->getBottomUP();
@@ -339,7 +332,7 @@ void sem1R::printColTopAncester(std::string fbgnid)
             Rcpp::Rcout << "konec" << std::endl;
     }
 }
-
+*/
 void sem1R::createCOLOntology(std::string name, std::string pathToOntology, Rcpp::List descriptionTerms)
 {
     if(printAndCheckPipeline(SET_COL_ONTOLOGY) == PIPELINE_UNACCEPTED)
@@ -379,7 +372,7 @@ void sem1R::createROWOntology(std::string name, std::string pathToOntology, Rcpp
     else
         Rcpp::Rcerr << "Ontology cannot be loaded!" << std::endl;
 }
-
+/*
 void sem1R::createTestROWOntology(std::string name, Rcpp::List descriptionTerms)
 {
     //if(printAndCheckPipeline(SET_ROW_ONTOLOGY) == PIPELINE_UNACCEPTED)
@@ -413,7 +406,8 @@ void sem1R::createTestCOLOntology(std::string name, Rcpp::List descriptionTerms)
     else
         Rcpp::Rcerr << "Ontology name is not found!" << std::endl;
 }
-
+*/
+/*
 Rcpp::NumericMatrix sem1R::getSimilaritySemanticMatrix(std::string ontologyName)
 {
     Ontology* onto;
@@ -465,6 +459,9 @@ double sem1R::getSemanticColscore(Rcpp::NumericVector tmp)
      return Evaluate::evaluateSemantic(&tmp, &(this->colOntology));
 }
 
+*/
+
+/*
 double sem1R::significantTest(int iterate, Rcpp::NumericVector tmpGene, Rcpp::NumericVector tmpSample)
 {
     //fix size
@@ -526,7 +523,7 @@ double sem1R::significantTest(int iterate, Rcpp::NumericVector tmpGene, Rcpp::Nu
     }
     return (double)betterRandom/iterate;
 }
-
+*/
 Rcpp::List sem1R::computeTermsEnrichment()
 {
     std::vector<Ontology *> refOntologies;
@@ -675,7 +672,7 @@ Rcpp::List sem1R::findDescription()
 
         std::vector<bottomFeature> bottomRules;
         //if(this->onlyPosFeatures)
-        bottomRules = bicExamples.initBottomFeaturesbitset(&enrichNodes, &(this->enrichPropositionTable3), this->onlyPosFeatures);
+        bottomRules = bicExamples.initBottomFeaturesbitset(&enrichNodes, &(this->enrichPropositionTable3), 1);
         //else
         //    bottomRules = bicExamples.initBottomFeaturesPosNeg(&enrichNodes, &enrichNodesNegatives,  &(this->enrichPropositionTable2));
 
@@ -701,6 +698,7 @@ Rcpp::List sem1R::findDescription()
 
         clock_t beginExh;
         clock_t endExh;
+        /*
         if(this->exhaustiveTest)
         {
                 BeamTopDown *beamTDExh = new BeamTopDown(&bottomRules, &newclass, this->objective, this->verbose);
@@ -710,7 +708,7 @@ Rcpp::List sem1R::findDescription()
                 newComplex actbestExh = beamTDExh->runExhaustive(this->filterTh, ruleDepth, this->signTH);
                 endExh = std::clock();
         }
-		      
+        */
         //nenasel jsem zadne pravidlo splnujici pozadavky
         if(actbest.score < 0)
             break;
@@ -754,11 +752,14 @@ Rcpp::List sem1R::findDescription()
         
         double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
         //Rcpp::Rcout << "[TOPOLOGY VERSION] elapsed overall time: " << elapsed_secs;
+
+        /*
         if(this->exhaustiveTest)
         {
                 double elapsed_secsExh = double(endExh - beginExh) / CLOCKS_PER_SEC;
                 //Rcpp::Rcout << std::endl << "[EXHAUSTIVE VERSION] elapsed overall time: " << elapsed_secsExh;
         }
+        */
         if(statActBest.coverPos < 1)
             break;
 
@@ -860,7 +861,7 @@ void sem1R::buildTrainingExamples(std::vector< std::vector<boost::dynamic_bitset
     }
 }
 
-
+/*
 Rcpp::NumericMatrix sem1R::countDist(Rcpp::NumericMatrix bicMatrix)
 {
     int nbics = bicMatrix.nrow();
@@ -896,7 +897,8 @@ Rcpp::NumericMatrix sem1R::countDist(Rcpp::NumericMatrix bicMatrix)
 
     return dist;
 }
-
+*/
+/*
 double sem1R::myXOR(arma::mat *templ, arma::mat *original)
 {
     arma::uvec indeces = find(*templ); //find non zero --- indexes
@@ -915,8 +917,9 @@ double sem1R::myVAR(arma::mat *templ, arma::mat *original)
     arma::vec elements = origVector(indeces);  //vector with selected elements
     return arma::var(elements);
 }
+*/
 
-
+/*
 std::vector<hypothesis> sem1R::findNewLGN()
 {
     std::vector<hypothesis> newRoots;
@@ -966,9 +969,9 @@ void sem1R::printHypothesis(hypothesis *hyp)
         }
     }
 }
+*/
 
-
-
+/*
 int sem1R::checkTermDescription()
 {
     //col ontology
@@ -992,3 +995,4 @@ int sem1R::checkTermDescription()
     }
     return error;
 }
+*/

@@ -68,7 +68,7 @@ BeamTopDown::BeamTopDown(std::vector<bottomFeature> *bottomFeatures, boost::dyna
 	}
 	else
 	{
-		std::cout << "Objective function: " << objective << " has not been found! F1 is set as an imlicit one." << std::endl;
+                Rcpp::Rcout << "Objective function: " << objective << " has not been found! F1 is set as an imlicit one." << std::endl;
 		evaluationFunction = &BeamTopDown::evaluateF1Score;
 		evaluationFunctionPotential = &BeamTopDown::evaluateF1ScorePotencialBoth;
 	}
@@ -81,7 +81,7 @@ newComplex BeamTopDown::runExhaustive(int filterTH, int ruleDepth, double signTH
     clock_t begin = std::clock();
 
     int iterate = 0;
-    std::cout << "runExhaustive: " << iterate << std::endl;
+    Rcpp::Rcout << "runExhaustive: " << iterate << std::endl;
     newComplex bestRule;
     bestRule.score = 0;
     bool atleastOneGenerated = false;
@@ -137,14 +137,14 @@ newComplex BeamTopDown::runExhaustive(int filterTH, int ruleDepth, double signTH
 
         ++iterate;
     }
-    std::cout << std::endl;
-    //std::cout << "runExhaustive: " << iterate << " best score: " << bestRule.score << " rule: " << getPrintableFeature(&bestRule) << std::endl;
+    Rcpp::Rcout << std::endl;
+    //Rcpp::Rcout << "runExhaustive: " << iterate << " best score: " << bestRule.score << " rule: " << getPrintableFeature(&bestRule) << std::endl;
 
-    std::cout << "RUN 1 - size: " << iterate << " best score: " << bestRule.score << std::endl;
-    std::cout << "Rule: " << getPrintableFeature(&bestRule) << std::endl << std::endl;
+    Rcpp::Rcout << "RUN 1 - size: " << iterate << " best score: " << bestRule.score << std::endl;
+    Rcpp::Rcout << "Rule: " << getPrintableFeature(&bestRule) << std::endl << std::endl;
     clock_t end = std::clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    std::cout << "elapsed time: " << elapsed_secs << std::endl << std::endl;
+    Rcpp::Rcout << "elapsed time: " << elapsed_secs << std::endl << std::endl;
     filterComplexes(&newCandidates, filterTH);
     //if(!atleastOneGenerated)
     //{
@@ -177,12 +177,12 @@ newComplex BeamTopDown::runExhaustive(int filterTH, int ruleDepth, double signTH
                     bool hasColOntology = false;
                     for(int irule = 0; irule < newItem.rules.size(); ++irule)
                     {
-						std::cout << " b: " << newItem.rules[irule]->exampleCovered.count();
+                                                Rcpp::Rcout << " b: " << newItem.rules[irule]->exampleCovered.count();
                         cover = cover & newItem.rules[irule]->exampleCovered;
                         if(newItem.rules[irule]->noderef->ontoType != ROW_ONTOLOGY)
 							hasColOntology = true;
                     }
-                    std::cout << std::endl;
+                    Rcpp::Rcout << std::endl;
                     //newItem.score = evaluateF1Score(&(cover), this->myclass);
                     newItem.score = (this->*evaluationFunction)(&(cover), this->myclass);            
                     newTmp.push(newItem);
@@ -194,14 +194,14 @@ newComplex BeamTopDown::runExhaustive(int filterTH, int ruleDepth, double signTH
 					newItem.coverPos = coverpos;
 					newItem.coverNeg = coverneg;
 					//newItem.sig = sig;
-					std::cout << "score: " << newItem.score << " pos: " << newItem.coverPos << " neg: " << newItem.coverNeg << " coverage: " << cover.count() << " mycandidate: ";
+                                        Rcpp::Rcout << "score: " << newItem.score << " pos: " << newItem.coverPos << " neg: " << newItem.coverNeg << " coverage: " << cover.count() << " mycandidate: ";
 					for(int i = 0; i < newItem.rules.size(); ++i)
 					{
 						Node *mynode = newItem.rules[i]->noderef;
-						std::cout << "id:#" << mynode->id << "# ";
+                                                Rcpp::Rcout << "id:#" << mynode->id << "# ";
 					}
 
-					std::cout << std::endl;
+                                        Rcpp::Rcout << std::endl;
                     duplicitiesBITSET[getRuleBitset(&newItem)] = true;
 
                     //if(bestRule.score <= newItem.score)
@@ -244,11 +244,11 @@ newComplex BeamTopDown::runExhaustive(int filterTH, int ruleDepth, double signTH
         //{
         //    std::cout << "id: " << bestRule.rules[ibest]->IDind << std::endl;
         //}
-        std::cout << "RUN " << icycle+2 << " - size: " << iterate << " best score: " << bestRule.score << std::endl;
-        std::cout << "Rule: " << getPrintableFeature(&bestRule) << std::endl << std::endl;
+        Rcpp::Rcout << "RUN " << icycle+2 << " - size: " << iterate << " best score: " << bestRule.score << std::endl;
+        Rcpp::Rcout << "Rule: " << getPrintableFeature(&bestRule) << std::endl << std::endl;
         clock_t end = std::clock();
         double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-        std::cout << "elapsed time: " << elapsed_secs << std::endl << std::endl;
+        Rcpp::Rcout << "elapsed time: " << elapsed_secs << std::endl << std::endl;
         
        // if(!atleastOneGenerated)
 	//	{
@@ -305,7 +305,7 @@ void BeamTopDown::filterComplexes(std::priority_queue<newComplex> *queue, int th
 int BeamTopDown::runExhaustive(Rcpp::DataFrame *enrichPropositionTable)
 {
 	//https://teuder.gitbooks.io/introduction-to-rcpp/en/13_dataframe.html
-    std::cout << "Starting exhaustive" << std::endl;
+    Rcpp::Rcout << "Starting exhaustive" << std::endl;
     Rcpp::NumericVector classColumn = (*enrichPropositionTable)["Class"];   //indexing start from 0
     int nsamples = classColumn.size();
     int ncol = (*enrichPropositionTable).length();
@@ -313,7 +313,7 @@ int BeamTopDown::runExhaustive(Rcpp::DataFrame *enrichPropositionTable)
     std::vector<boost::dynamic_bitset<> > groundFeatures(ncol - 1);
 
     //class numeric vector to bitset    
-    std::cout << "class column size: " << nsamples << std::endl;
+    Rcpp::Rcout << "class column size: " << nsamples << std::endl;
     for(int i = 0; i < nsamples; ++i)
     {
         if(classColumn[i] == 1)
@@ -336,7 +336,7 @@ int BeamTopDown::runExhaustive(Rcpp::DataFrame *enrichPropositionTable)
 
     std::vector<exhaustiveRule> F;
     //evaluate complex
-    std::cout << "init score: ";
+    Rcpp::Rcout << "init score: ";
     for(int ieval = 0; ieval < groundFeatures.size(); ++ieval)
     {
 	//std::cout << groundFeatures[ieval].count() << std::endl;
@@ -353,14 +353,14 @@ int BeamTopDown::runExhaustive(Rcpp::DataFrame *enrichPropositionTable)
 
         groud.candidates = candidates;
         F.push_back(groud);
-        std::cout << score << " ";
+        Rcpp::Rcout << score << " ";
     }
-    std::cout << std::endl;
+    Rcpp::Rcout << std::endl;
 
     for(int icycle = 0; icycle < 4; ++icycle)
     {
         std::vector<exhaustiveRule> newF;
-        std::cout << "cycle " << icycle << " score: ";
+        Rcpp::Rcout << "cycle " << icycle << " score: ";
         for(int ground = 0; ground < F.size(); ++ground)
         {
             for(int add = 0; add < F[ground].candidates.size(); ++add)
@@ -377,8 +377,8 @@ int BeamTopDown::runExhaustive(Rcpp::DataFrame *enrichPropositionTable)
                 //std::cout << score << " ";
             }
         }
-        std::cout << std::endl;
-	std::cout << "newF size: " << newF.size() << std::endl;
+        Rcpp::Rcout << std::endl;
+        Rcpp::Rcout << "newF size: " << newF.size() << std::endl;
         F = newF;
     }
 }
@@ -582,7 +582,7 @@ newComplex BeamTopDown::runTopologyVersion(int filterTH, int ruleDepth, double s
                                     mycand.coverNeg = coverneg;
                                     mycand.sig = sig;
 									
-		/*							std::cout << "score: " << mycand.score << " mycandidate: ";
+                /*							Rcpp::Rcout << "score: " << mycand.score << " mycandidate: ";
 									for(int i = 0; i < mycand.rules.size(); ++i)
 									{
 										Node *mynode = mycand.rules[i]->noderef;
@@ -1481,7 +1481,7 @@ int BeamTopDown::run()
             newItem.intNode2Specified = iOnto;
             newItem.object = this->evaluateF1Score(&newItem);//newItem.bitset[ontoID], &ontoID);
             newItem.bestPathScore = newItem.object;
-            std::cout << "root obj: " << newItem.object  << " ONTO: " << (*roots)[iroot]->onto_ref->getName() << " P: " << newItem.P << " N: " << newItem.N << std::endl;
+            Rcpp::Rcout << "root obj: " << newItem.object  << " ONTO: " << (*roots)[iroot]->onto_ref->getName() << " P: " << newItem.P << " N: " << newItem.N << std::endl;
             CLOSED[iOnto][(*roots)[iroot]->idNum] = 1;//set closed
 
 
@@ -1508,19 +1508,19 @@ int BeamTopDown::run()
                 max_heap.pop();
                 max_heap_TOTAL.push(best);
                 //topBest.push_back(best);
-                std::cout << "onto: " << best.node2Specified->onto_ref->getName() << " score: " << best.object << " P:" << best.P << " N:" << best.N  << " hypothesis: ";
+                Rcpp::Rcout << "onto: " << best.node2Specified->onto_ref->getName() << " score: " << best.object << " P:" << best.P << " N:" << best.N  << " hypothesis: ";
                 best.node2Specified->onto_ref->printSemanticPattern(&(best.bitset[best.intNode2Specified]));
 
                 for(int io = 0; io < refOntologies->size(); ++io)
                 {
                     if(!best.bitset[io].none())
                     {
-                        std::cout << (*refOntologies)[io]->getName() << "_";
+                        Rcpp::Rcout << (*refOntologies)[io]->getName() << "_";
                         (*refOntologies)[io]->printSemanticPattern(&(best.bitset[io]));
                     }
                 }
 
-                std::cout << std::endl << "--------------------------" << std::endl;
+                Rcpp::Rcout << std::endl << "--------------------------" << std::endl;
             }
 
             while(!OPEN_heap.empty())
@@ -1530,7 +1530,7 @@ int BeamTopDown::run()
         }
     }
 
-    std::cout << "STOP INITIALIZING"  << std::endl;
+    Rcpp::Rcout << "STOP INITIALIZING"  << std::endl;
 
     for(int iicycle = 0; iicycle < 300; ++iicycle)
     {
@@ -1565,12 +1565,12 @@ int BeamTopDown::run()
                 newItem.intNode2Specified = iOnto;
                 newItem.object = this->evaluateF1Score(&newItem);//newItem.bitset[ontoID], &ontoID);
                 newItem.bestPathScore = newItem.object;
-                std::cout << "new - root obj (" << (*roots)[iroot]->onto_ref->getName() << ") : " << newItem.object << " P: " << newItem.P << " N: " << newItem.N << std::endl;
+                Rcpp::Rcout << "new - root obj (" << (*roots)[iroot]->onto_ref->getName() << ") : " << newItem.object << " P: " << newItem.P << " N: " << newItem.N << std::endl;
 
 
-                std::cout << "to discover- onto: " << newItem.node2Specified->onto_ref->getName()  <<  " score: " << newItem.object << " P:" << newItem.P << " N:" << newItem.N  << " hypothesis: ";
+                Rcpp::Rcout << "to discover- onto: " << newItem.node2Specified->onto_ref->getName()  <<  " score: " << newItem.object << " P:" << newItem.P << " N:" << newItem.N  << " hypothesis: ";
                 newItem.node2Specified->onto_ref->printSemanticPattern(&(newItem.bitset[newItem.intNode2Specified]));
-                std::cout << std::endl;
+                Rcpp::Rcout << std::endl;
 
 
                 CLOSED[iOnto][(*roots)[iroot]->idNum] = 1;//set closed
@@ -1596,19 +1596,19 @@ int BeamTopDown::run()
                     max_heap.pop();
                     max_heap_TOTAL.push(best);
                     //topBest.push_back(best);
-                    std::cout << "onto: " << best.node2Specified->onto_ref->getName() << " score: " << best.object << " P:" << best.P << " N:" << best.N  << " hypothesis: ";
+                    Rcpp::Rcout << "onto: " << best.node2Specified->onto_ref->getName() << " score: " << best.object << " P:" << best.P << " N:" << best.N  << " hypothesis: ";
                     best.node2Specified->onto_ref->printSemanticPattern(&(best.bitset[best.intNode2Specified]));
 
                     for(int io = 0; io < refOntologies->size(); ++io)
                     {
                         if(!best.bitset[io].none())
                         {
-                            std::cout << (*refOntologies)[io]->getName() << "_";
+                            Rcpp::Rcout << (*refOntologies)[io]->getName() << "_";
                             (*refOntologies)[io]->printSemanticPattern(&(best.bitset[io]));
                         }
                     }
 
-                    std::cout << std::endl << "--------------------------" << std::endl;
+                    Rcpp::Rcout << std::endl << "--------------------------" << std::endl;
                 }
 
                 while(!OPEN_heap.empty())
@@ -1622,35 +1622,35 @@ int BeamTopDown::run()
         }
     }
 
-    std::cout << " --- TOTAL ---" << std::endl;
+    Rcpp::Rcout << " --- TOTAL ---" << std::endl;
     while(!max_heap_TOTAL.empty())
     {
         conjunction_max best = max_heap_TOTAL.top();
         max_heap_TOTAL.pop();
-        std::cout << "onto: " << best.node2Specified->onto_ref->getName() << " score: " << best.object << " P:" << best.P << " N:" << best.N  << " hypothesis: ";
+        Rcpp::Rcout << "onto: " << best.node2Specified->onto_ref->getName() << " score: " << best.object << " P:" << best.P << " N:" << best.N  << " hypothesis: ";
         best.node2Specified->onto_ref->printSemanticPattern(&(best.bitset[best.intNode2Specified]));
 
         for(int io = 0; io < refOntologies->size(); ++io)
         {
             if(!best.bitset[io].none())
             {
-                std::cout << (*refOntologies)[io]->getName() << "_";
+                Rcpp::Rcout << (*refOntologies)[io]->getName() << "_";
                 (*refOntologies)[io]->printSemanticPattern(&(best.bitset[io]));
             }
         }
 
-        std::cout << std::endl; //<< "--------------------------" << std::endl;
+        Rcpp::Rcout << std::endl; //<< "--------------------------" << std::endl;
     }
 
-    std::cout << std::endl << "BEST OF BEST: ";
-    std::cout << "onto: " << ABSL_BEST.node2Specified->onto_ref->getName() << " score: " << ABSL_BEST.object << " P:" << ABSL_BEST.P << " N:" << ABSL_BEST.N  << " hypothesis: ";
+    Rcpp::Rcout << std::endl << "BEST OF BEST: ";
+    Rcpp::Rcout << "onto: " << ABSL_BEST.node2Specified->onto_ref->getName() << " score: " << ABSL_BEST.object << " P:" << ABSL_BEST.P << " N:" << ABSL_BEST.N  << " hypothesis: ";
     //ABSL_BEST.node2Specified->onto_ref->printSemanticPattern(&(ABSL_BEST.bitset[ABSL_BEST.intNode2Specified]));
 
     for(int io = 0; io < refOntologies->size(); ++io)
     {
         if(!ABSL_BEST.bitset[io].none())
         {
-            std::cout << (*refOntologies)[io]->getName() << "_";
+            Rcpp::Rcout << (*refOntologies)[io]->getName() << "_";
             (*refOntologies)[io]->printSemanticPattern(&(ABSL_BEST.bitset[io]));
         }
     }
@@ -1681,9 +1681,9 @@ int BeamTopDown::run()
     for(int icycles = 0; icycles < 2; ++icycles)
     {
         conjunction_max bestConjunctionTMP = OPEN_heap.top();
-        std::cout << "to discover- onto: " << bestConjunctionTMP.node2Specified->onto_ref->getName()  <<  " score: " << bestConjunctionTMP.object << " P:" << bestConjunctionTMP.P << " N:" << bestConjunctionTMP.N  << " hypothesis: ";
+        Rcpp::Rcout << "to discover- onto: " << bestConjunctionTMP.node2Specified->onto_ref->getName()  <<  " score: " << bestConjunctionTMP.object << " P:" << bestConjunctionTMP.P << " N:" << bestConjunctionTMP.N  << " hypothesis: ";
         bestConjunctionTMP.node2Specified->onto_ref->printSemanticPattern(&(bestConjunctionTMP.bitset[bestConjunctionTMP.intNode2Specified]));
-        std::cout << std::endl;
+        Rcpp::Rcout << std::endl;
         for(int i = 0; i < ITERATE_LIMIT; ++i)
         {
             if(OPEN_heap.empty())
@@ -1695,7 +1695,7 @@ int BeamTopDown::run()
             bestConjunction = max_heap.top();
 
         }
-        std::cout << "Best generated item: " << std::endl;
+        Rcpp::Rcout << "Best generated item: " << std::endl;
         int pos = 1;
         std::vector<conjunction_max> topBest;
         //check limit
@@ -1708,22 +1708,22 @@ int BeamTopDown::run()
             max_heap.pop();
             max_heap_TOTAL.push(best);
             //topBest.push_back(best);
-            std::cout << "onto: " << best.node2Specified->onto_ref->getName() << " score: " << best.object << " P:" << best.P << " N:" << best.N  << " hypothesis: ";
+            Rcpp::Rcout << "onto: " << best.node2Specified->onto_ref->getName() << " score: " << best.object << " P:" << best.P << " N:" << best.N  << " hypothesis: ";
             best.node2Specified->onto_ref->printSemanticPattern(&(best.bitset[best.intNode2Specified]));
 
             for(int io = 0; io < refOntologies->size(); ++io)
             {
                 if(!best.bitset[io].none())
                 {
-                    std::cout << (*refOntologies)[io]->getName() << "_";
+                    Rcpp::Rcout << (*refOntologies)[io]->getName() << "_";
                     (*refOntologies)[io]->printSemanticPattern(&(best.bitset[io]));
                 }
             }
 
-            std::cout << std::endl;
+            Rcpp::Rcout << std::endl;
             pos++;
         }
-        std::cout << std::endl;
+        Rcpp::Rcout << std::endl;
       /*  for(int ib = 0; ib < topBest.size(); ++ib)
         {
             max_heap.push(topBest[ib]);
@@ -1743,10 +1743,10 @@ int BeamTopDown::run()
         conjunction_max actbest = max_heap_TOTAL.top();
         max_heap_TOTAL.pop();
 
-        std::cout << "Best of ALL: ";
-        std::cout << "onto: " << actbest.node2Specified->onto_ref->getName() << " score: " << actbest.object << " P:" << actbest.P << " N:" << actbest.N  << " hypothesis: ";
+        Rcpp::Rcout << "Best of ALL: ";
+        Rcpp::Rcout << "onto: " << actbest.node2Specified->onto_ref->getName() << " score: " << actbest.object << " P:" << actbest.P << " N:" << actbest.N  << " hypothesis: ";
         actbest.node2Specified->onto_ref->printSemanticPattern(&(actbest.bitset[actbest.intNode2Specified]));
-        std::cout << std::endl;
+        Rcpp::Rcout << std::endl;
 
         for(int iOnto = 0; iOnto < this->refOntologies->size(); ++iOnto)
         {
@@ -1776,7 +1776,7 @@ int BeamTopDown::run()
                 newItem.intNode2Specified = iOnto;
                 newItem.object = this->evaluateF1Score(&newItem);//newItem.bitset[ontoID], &ontoID);
                 newItem.bestPathScore = newItem.object;
-                std::cout << "new - root obj (" << (*roots)[iroot]->onto_ref->getName() << ") : " << newItem.object << " P: " << newItem.P << " N: " << newItem.N << std::endl;
+                Rcpp::Rcout << "new - root obj (" << (*roots)[iroot]->onto_ref->getName() << ") : " << newItem.object << " P: " << newItem.P << " N: " << newItem.N << std::endl;
                 //boost::dynamic_bitset<> *bitset = new boost::dynamic_bitset<>((*refOntologies)[iOnto]->getOntologyParser()->getTermsNumber(),0);
                 //(*bitset)[(*roots)[iroot]->idNum] = 1;    //set
                 CLOSED[iOnto][(*roots)[iroot]->idNum] = 1;//set closed
@@ -1798,7 +1798,7 @@ int BeamTopDown::run()
             checkQueueMaxLimit(&max_heap_TOTAL, &min_heap, 100);
 
 
-        std::cout << "CURRENT TOTAL SCORE:" << std::endl;
+        Rcpp::Rcout << "CURRENT TOTAL SCORE:" << std::endl;
         topBest.clear();
 
         while(!max_heap_TOTAL.empty())
@@ -1806,7 +1806,7 @@ int BeamTopDown::run()
             conjunction_max best = max_heap_TOTAL.top();
             max_heap_TOTAL.pop();
             topBest.push_back(best);
-            std::cout << pos << " score: " << best.object << " P:" << best.P << " N:" << best.N  << " hypothesis: ";
+            Rcpp::Rcout << pos << " score: " << best.object << " P:" << best.P << " N:" << best.N  << " hypothesis: ";
 
 
             //best.node2Specified->onto_ref->printSemanticPattern(&(best.bitset[best.intNode2Specified]));
@@ -1815,12 +1815,12 @@ int BeamTopDown::run()
             {
                 if(!best.bitset[io].none())
                 {
-                    std::cout << (*refOntologies)[io]->getName() << "_";
+                    Rcpp::Rcout << (*refOntologies)[io]->getName() << "_";
                     (*refOntologies)[io]->printSemanticPattern(&(best.bitset[io]));
                 }
             }
 
-            std::cout << std::endl;
+            Rcpp::Rcout << std::endl;
             pos++;
         }
 
@@ -1830,7 +1830,7 @@ int BeamTopDown::run()
         }
 
         OPEN_heap.push(max_heap_TOTAL.top());
-        std::cout << "cycle END " << icycles << std::endl << std::endl << std::endl;
+        Rcpp::Rcout << "cycle END " << icycles << std::endl << std::endl << std::endl;
     }
 
     //next steps
@@ -1924,15 +1924,15 @@ int BeamTopDown::runTest()
             //        checkQueueMaxLimit(&max_heap, &min_heap, 100000);
     }
 
-    std::cout << "Stats: best " << QUEUE_LIMIT << " candidates" << std::endl;
+    Rcpp::Rcout << "Stats: best " << QUEUE_LIMIT << " candidates" << std::endl;
 
     conjunction_max actbest = max_heap.top();
     max_heap.pop();
 
-    std::cout << "Best of ALL: ";
-    std::cout << "onto: " << actbest.node2Specified->onto_ref->getName() << " score: " << actbest.object << " P:" << actbest.P << " N:" << actbest.N  << " hypothesis: ";
+    Rcpp::Rcout << "Best of ALL: ";
+    Rcpp::Rcout << "onto: " << actbest.node2Specified->onto_ref->getName() << " score: " << actbest.object << " P:" << actbest.P << " N:" << actbest.N  << " hypothesis: ";
     actbest.node2Specified->onto_ref->printSemanticPattern(&(actbest.bitset[actbest.intNode2Specified]));
-    std::cout << std::endl;
+    Rcpp::Rcout << std::endl;
 
     return 0;
 }
@@ -2032,7 +2032,7 @@ void BeamTopDown::initPriorityQueue(std::priority_queue<conjunction_max> *OPEN_h
             newItem.object = this->evaluateF1Score(&newItem);//newItem.bitset[ontoID], &ontoID);
             newItem.bestPathScore = newItem.object;
 
-            std::cout << "root obj: " << newItem.object  << " ONTO: " << (*roots)[iroot]->onto_ref->getName() << " P: " << newItem.P << " N: " << newItem.N << std::endl;
+            Rcpp::Rcout << "root obj: " << newItem.object  << " ONTO: " << (*roots)[iroot]->onto_ref->getName() << " P: " << newItem.P << " N: " << newItem.N << std::endl;
             (*CLOSED)[iOnto][(*roots)[iroot]->idNum] = 1;//set closed
 
             max_heap->push(newItem);
@@ -2192,7 +2192,7 @@ bool BeamTopDown::generateNewConjunctions(std::priority_queue<conjunction_max> *
                 sibling.discovered[sibling.intNode2Specified][iedge->start->idNum] = 1; //already discovered, will be more general
 
                 if(best.node2Specified->idNum != iedge->start->idNum)
-                    std::cout << "edge: " << iedge->start->idNum << " best: " << best.node2Specified->idNum << std::endl;
+                    Rcpp::Rcout << "edge: " << iedge->start->idNum << " best: " << best.node2Specified->idNum << std::endl;
 
                 sibling.bitset[sibling.intNode2Specified][iedge->end->idNum] = 1; //set current
                 sibling.node2Specified = iedge->end;
@@ -2207,27 +2207,27 @@ bool BeamTopDown::generateNewConjunctions(std::priority_queue<conjunction_max> *
 
                 if(debug)
                 {
-                    std::cout << "score: " << actScore << " id: " << iedge->end->idNum << " onto id|sib|best: " << sibling.intNode2Specified << best.intNode2Specified <<  " best score:" << best.bestPathScore << " siblingbest: " << sibling.bestPathScore << " parent: " << iedge->start->idNum << " ";
+                    Rcpp::Rcout << "score: " << actScore << " id: " << iedge->end->idNum << " onto id|sib|best: " << sibling.intNode2Specified << best.intNode2Specified <<  " best score:" << best.bestPathScore << " siblingbest: " << sibling.bestPathScore << " parent: " << iedge->start->idNum << " ";
                     sibling.node2Specified->onto_ref->printSemanticPattern(&(sibling.bitset[sibling.intNode2Specified]));
                 }
 
                 double potentialBestScore = (2*sibling.P) / (double)(2*sibling.P + (this->POSexamples->size() - sibling.P));
                 if(debug)
-                    std::cout << " potential: "  << potentialBestScore << " P: " << sibling.P << " N: " << sibling.N;
+                    Rcpp::Rcout << " potential: "  << potentialBestScore << " P: " << sibling.P << " N: " << sibling.N;
                 if(potentialBestScore > (best.bestPathScore - EPS_DOUBLE))// || actScore > (best.object - EPS_DOUBLE))
                 {
                     OPEN_heap->push(sibling);
                     max_heap->push(sibling);
                     if(debug)
-                        std::cout << " OK!!";
+                        Rcpp::Rcout << " OK!!";
                 }
                 bool a = potentialBestScore > (best.bestPathScore - EPS_DOUBLE);
                 bool b = actScore > (best.object - EPS_DOUBLE);
 
                 if(debug)
                 {
-                    std::cout << " - pot cond: " << a << " act cond: " << b;
-                    std::cout << std::endl;
+                    Rcpp::Rcout << " - pot cond: " << a << " act cond: " << b;
+                    Rcpp::Rcout << std::endl;
                 }
             }
         }
@@ -2265,7 +2265,7 @@ bool BeamTopDown::generateNewConjunctions_COMPLETE(std::priority_queue<conjuncti
                 sibling.discovered[sibling.intNode2Specified][iedge->start->idNum] = 1; //already discovered, will be more general
 
                 if(best.node2Specified->idNum != iedge->start->idNum)
-                    std::cout << "edge: " << iedge->start->idNum << " best: " << best.node2Specified->idNum << std::endl;
+                    Rcpp::Rcout << "edge: " << iedge->start->idNum << " best: " << best.node2Specified->idNum << std::endl;
 
 
                 sibling.bitset[sibling.intNode2Specified][iedge->end->idNum] = 1; //set current
@@ -2273,9 +2273,9 @@ bool BeamTopDown::generateNewConjunctions_COMPLETE(std::priority_queue<conjuncti
                 double actScore = this->evaluateF1Score(&sibling);
                 sibling.object = actScore;
 
-                std::cout << "score: " << actScore << " id: " << iedge->end->idNum << " hypothesis: ";
+                Rcpp::Rcout << "score: " << actScore << " id: " << iedge->end->idNum << " hypothesis: ";
                 sibling.node2Specified->onto_ref->printSemanticPattern(&(sibling.bitset[sibling.intNode2Specified]));
-                std::cout << std::endl;
+                Rcpp::Rcout << std::endl;
 
                             OPEN_heap->push(sibling);
                             max_heap->push(sibling);

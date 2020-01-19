@@ -1,0 +1,1088 @@
+format-version: 1.2
+date: 18:01:2017 15:16
+saved-by: fanda
+auto-generated-by: OBO-Edit 2.3.1
+default-namespace: DOT
+
+
+[Term]
+id: DOT:2
+name: stage1_stage1
+relationship: develops_from DOT:3
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:3
+name: stage2_to_7_stage2-7
+relationship: develops_from DOT:4
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:4
+name: stage8_stage8
+relationship: develops_from DOT:5
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:5
+name: stage9_stage9
+relationship: develops_from DOT:6
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:6
+name: stage10_stage10
+relationship: develops_from DOT:7
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:7
+name: misc_misc
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:8
+name: somatic cells_stage1
+relationship: part_of DOT:2
+relationship: develops_from DOT:35
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:9
+name: germline cells_stage1
+relationship: part_of DOT:2
+relationship: develops_from DOT:22
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:10
+name: terminal filament_stage1
+relationship: part_of DOT:8
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:11
+name: cap cells_stage1
+relationship: part_of DOT:8
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:12
+name: escort cells_stage1
+relationship: part_of DOT:8
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:13
+name: follicle stem cells_stage1
+relationship: part_of DOT:8
+relationship: develops_from DOT:14
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:14
+name: follicle cells_stage1
+relationship: develops_from DOT:15
+relationship: develops_from DOT:16
+relationship: develops_from DOT:17
+relationship: develops_from DOT:39
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:15
+name: interfollicular stalk cells_stage1
+relationship: develops_from DOT:43
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:16
+name: anterior follicle cells_stage1
+relationship: develops_from DOT:47
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:17
+name: posterior follicle cells_stage1
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:18
+name: germline stem cells_stage1
+relationship: part_of DOT:9
+relationship: develops_from DOT:19
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:19
+name: cystoblast_stage1
+relationship: develops_from DOT:20
+relationship: develops_from DOT:21
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:20
+name: presumptive nurse cells_stage1
+relationship: develops_from DOT:31
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:21
+name: presumptive oocyte_stage1
+relationship: develops_from DOT:26
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:22
+name: germline cells_ubiquitous_stage2-7
+relationship: part_of DOT:3
+relationship: develops_from DOT:23
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:23
+name: germline cells_ubiquitous_stage8
+relationship: part_of DOT:4
+relationship: develops_from DOT:24
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:24
+name: germline cells_ubiquitous_stage9
+relationship: part_of DOT:5
+relationship: develops_from DOT:25
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:25
+name: germline cells_ubiquitous_stage10
+relationship: part_of DOT:6
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:26
+name: oocyte_stage2-7
+relationship: part_of DOT:22
+relationship: part_of DOT:3
+relationship: develops_from DOT:27
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:27
+name: oocyte_stage8
+relationship: part_of DOT:23
+relationship: develops_from DOT:29
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:29
+name: oocyte_stage9
+relationship: part_of DOT:24
+relationship: develops_from DOT:30
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:30
+name: oocyte_stage10
+relationship: part_of DOT:25
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:31
+name: nurse cells_stage2-7
+relationship: part_of DOT:22
+relationship: develops_from DOT:32
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:32
+name: nurse cells_stage8
+relationship: part_of DOT:23
+relationship: develops_from DOT:33
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:33
+name: nurse cells_stage9
+relationship: part_of DOT:24
+relationship: develops_from DOT:34
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:34
+name: nurse cells_stage10
+relationship: part_of DOT:25
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:35
+name: somatic cells_stage2-7
+relationship: part_of DOT:3
+relationship: develops_from DOT:36
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:36
+name: somatic cells_stage8
+relationship: part_of DOT:4
+relationship: develops_from DOT:37
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:37
+name: somatic cells_stage9
+relationship: part_of DOT:5
+relationship: develops_from DOT:38
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:38
+name: somatic cells_stage10
+relationship: part_of DOT:6
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:39
+name: follicle cells_stage2-7
+relationship: part_of DOT:35
+relationship: develops_from DOT:40
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:40
+name: follicle cells_stage8
+relationship: part_of DOT:36
+relationship: develops_from DOT:41
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:41
+name: follicle cells_stage9
+relationship: part_of DOT:37
+relationship: develops_from DOT:42
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:42
+name: follicle cells_stage10
+relationship: part_of DOT:38
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:43
+name: interfollicular stalk cells_stage2-7
+relationship: part_of DOT:35
+relationship: develops_from DOT:44
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:44
+name: interfollicular stalk cells_stage8
+relationship: part_of DOT:36
+relationship: develops_from DOT:45
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:45
+name: interfollicular stalk cells_stage9
+relationship: part_of DOT:37
+relationship: develops_from DOT:46
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:46
+name: interfollicular stalk cells_stage10
+relationship: part_of DOT:38
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:47
+name: anterior follicle cells_stage2-7
+relationship: part_of DOT:39
+relationship: develops_from DOT:48
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:48
+name: anterior follicle cells_stage8
+relationship: part_of DOT:40
+relationship: develops_from DOT:49
+relationship: develops_from DOT:139
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:49
+name: border cells_stage9
+relationship: part_of DOT:41
+relationship: develops_from DOT:50
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:50
+name: border cells_stage10
+relationship: part_of DOT:42
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:52
+name: oocyte asoociated follicle cells_stage8
+relationship: part_of DOT:40
+relationship: part_of DOT:40
+relationship: develops_from DOT:53
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:53
+name: oocyte asoociated follicle cells_stage9
+relationship: part_of DOT:41
+relationship: develops_from DOT:54
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:54
+name: oocyte asoociated follicle cells_stage10
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:55
+name: nurse cells associated follicle _stage8
+relationship: part_of DOT:40
+relationship: part_of DOT:40
+relationship: develops_from DOT:56
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:56
+name: nurse cells associated follicle _stage9
+relationship: part_of DOT:41
+relationship: develops_from DOT:57
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:57
+name: nurse cells associated follicle _stage10
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:58
+name: posterior follicle cells_stage2-7
+relationship: part_of DOT:39
+relationship: develops_from DOT:59
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:59
+name: posterior follicle cells_stage8
+relationship: develops_from DOT:60
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:60
+name: posterior follicle cells_stage9
+relationship: develops_from DOT:61
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:61
+name: posterior follicle cells_stage10
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:62
+name: centripetally migrating follicle_stage10
+relationship: part_of DOT:42
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:64
+name: anterior restriction_stage2-7
+relationship: part_of DOT:26
+relationship: develops_from DOT:71
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:65
+name: posterior restriction_stage2-7
+relationship: part_of DOT:26
+relationship: develops_from DOT:75
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:66
+name: nurse cells_nuclear foci_stage2-7
+relationship: part_of DOT:31
+relationship: develops_from DOT:82
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:67
+name: nurse cells_perinuclear_stage2-7
+relationship: part_of DOT:31
+relationship: develops_from DOT:85
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:69
+name: cytoplasmic foci_stage2-7
+relationship: part_of DOT:31
+relationship: develops_from DOT:111
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:70
+name: apical restriction_stage2-7
+relationship: part_of DOT:39
+relationship: develops_from DOT:108
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:71
+name: anterior restriction_stage8
+relationship: part_of DOT:27
+relationship: develops_from DOT:73
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:73
+name: anterior restriction_stage9
+relationship: part_of DOT:29
+relationship: develops_from DOT:74
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:74
+name: anterior restriction_stage10
+relationship: part_of DOT:30
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:75
+name: posterior restriction_stage8
+relationship: part_of DOT:27
+relationship: develops_from DOT:76
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:76
+name: posterior restriction_stage9
+relationship: develops_from DOT:77
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:77
+name: posterior restriction_stage10
+relationship: part_of DOT:30
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:80
+name: cortical enrichment_stage9
+relationship: part_of DOT:29
+relationship: develops_from DOT:81
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:81
+name: cortical enrichment_stage10
+relationship: part_of DOT:30
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:82
+name: nurse cells_nuclear foci_stage8
+relationship: part_of DOT:32
+relationship: develops_from DOT:83
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:83
+name: nurse cells_nuclear foci_stage9
+relationship: part_of DOT:33
+relationship: develops_from DOT:84
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:84
+name: nurse cells_nuclear foci_stage10
+relationship: part_of DOT:34
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:85
+name: nurse cells_perinuclear_stage8
+relationship: part_of DOT:32
+relationship: develops_from DOT:86
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:86
+name: nurse cells_perinuclear_stage9
+relationship: part_of DOT:33
+relationship: develops_from DOT:87
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:87
+name: nurse cells_perinuclear_stage10
+relationship: part_of DOT:34
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:88
+name: no signal at all stages_stage1
+relationship: part_of DOT:2
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:89
+name: ubiquitous signal_stage1
+relationship: part_of DOT:138
+relationship: develops_from DOT:100
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:90
+name: interesting pattern!_stage1
+relationship: part_of DOT:2
+relationship: part_of DOT:3
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:91
+name: interesting pattern_stage1
+relationship: part_of DOT:2
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:100
+name: ubiquitous signal_stage2-7
+relationship: part_of DOT:3
+relationship: develops_from DOT:101
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:101
+name: ubiquitous signal_stage8
+relationship: part_of DOT:4
+relationship: develops_from DOT:102
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:102
+name: ubiquitous signal_stage9
+relationship: part_of DOT:5
+relationship: develops_from DOT:103
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:103
+name: ubiquitous signal_stage10
+relationship: part_of DOT:6
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:104
+name: basal restrictrion_stage2-7
+relationship: part_of DOT:39
+relationship: develops_from DOT:105
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:105
+name: basal restrictrion_stage8
+relationship: part_of DOT:40
+relationship: develops_from DOT:106
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:106
+name: basal restrictrion_stage9
+relationship: part_of DOT:41
+relationship: develops_from DOT:107
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:107
+name: basal restrictrion_stage10
+relationship: part_of DOT:42
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:108
+name: apical restriction_stage8
+relationship: part_of DOT:40
+relationship: develops_from DOT:109
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:109
+name: apical restriction_stage9
+relationship: part_of DOT:41
+relationship: develops_from DOT:110
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:110
+name: apical restriction_stage10
+relationship: part_of DOT:42
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:111
+name: cytoplasmic foci_stage8
+relationship: part_of DOT:32
+relationship: develops_from DOT:112
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:112
+name: cytoplasmic foci_stage9
+relationship: part_of DOT:33
+relationship: develops_from DOT:113
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:113
+name: cytoplasmic foci_stage10
+relationship: part_of DOT:34
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:114
+name: cytoplasmic foci_stage2-7
+relationship: part_of DOT:39
+relationship: develops_from DOT:115
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:115
+name: cytoplasmic foci_stage8
+relationship: part_of DOT:40
+relationship: develops_from DOT:116
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:116
+name: cytoplasmic foci_stage9
+relationship: part_of DOT:41
+relationship: develops_from DOT:117
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:117
+name: cytoplasmic foci_stage10
+relationship: part_of DOT:42
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:118
+name: cytoplasmic foci_stage2-7
+relationship: part_of DOT:26
+relationship: develops_from DOT:119
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:119
+name: cytoplasmic foci_stage8
+relationship: part_of DOT:27
+relationship: develops_from DOT:120
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:120
+name: cytoplasmic foci_stage9
+relationship: part_of DOT:29
+relationship: develops_from DOT:121
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:121
+name: cytoplasmic foci_stage10
+relationship: part_of DOT:30
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:128
+name: nuclear foci_stage2-7
+relationship: part_of DOT:39
+relationship: develops_from DOT:129
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:129
+name: nuclear foci_stage8
+relationship: part_of DOT:40
+relationship: develops_from DOT:130
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:130
+name: nuclear foci_stage9
+relationship: part_of DOT:41
+relationship: develops_from DOT:131
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:131
+name: nuclear foci_stage10
+relationship: part_of DOT:42
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:132
+name: enrichment_ubiquitous_stage2-7
+relationship: part_of DOT:26
+relationship: develops_from DOT:133
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:133
+name: oocyte_ubiquitous_stage8
+relationship: part_of DOT:27
+relationship: develops_from DOT:162
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:138
+name: ubiquitous signal at all stages_stage1
+relationship: part_of DOT:2
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:139
+name: anterior follicle cell_stage9
+relationship: part_of DOT:41
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:140
+name: squamous follicle cells_stage10
+relationship: part_of DOT:42
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:141
+name: cortical enrichment_stage2-7
+relationship: part_of DOT:39
+relationship: develops_from DOT:142
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:142
+name: cortical enrichment_stage8
+relationship: part_of DOT:40
+relationship: develops_from DOT:143
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:143
+name: cortical enrichment_stage9
+relationship: part_of DOT:41
+relationship: develops_from DOT:144
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:144
+name: cortical enrichment_stage10
+relationship: part_of DOT:42
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:145
+name: cortical enrichment_stage2-7
+relationship: part_of DOT:31
+relationship: develops_from DOT:146
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:146
+name: cortical enrichment_stage8
+relationship: part_of DOT:32
+relationship: develops_from DOT:147
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:147
+name: cortical enrichment_stage9
+relationship: part_of DOT:33
+relationship: develops_from DOT:148
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:148
+name: cortical enrichment_stage10
+relationship: part_of DOT:34
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:149
+name: follicle cells overlaying the oo_stage10
+relationship: part_of DOT:42
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:154
+name: nurse cells_ubiquitous_stage2-7
+relationship: part_of DOT:31
+relationship: develops_from DOT:155
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:155
+name: nurse cells_ubiquitous_stage8
+relationship: part_of DOT:32
+relationship: develops_from DOT:156
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:156
+name: nurse cells_ubiquitous_stage9
+relationship: part_of DOT:33
+relationship: develops_from DOT:157
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:157
+name: nurse cells_ubiquitous_stage10
+relationship: part_of DOT:34
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:158
+name: follicle cells_ubiquitous_stage2-7
+relationship: part_of DOT:39
+relationship: develops_from DOT:159
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:159
+name: follicle cells_ubiquitous_stage8
+relationship: part_of DOT:36
+relationship: develops_from DOT:160
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:160
+name: follicle cells_ubiquitous_stage9
+relationship: part_of DOT:37
+relationship: develops_from DOT:161
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:161
+name: follicle cells_ubiquitous_stage10
+relationship: part_of DOT:38
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:162
+name: oocyte_ubiquitous_stage9
+relationship: part_of DOT:29
+relationship: develops_from DOT:163
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:163
+name: oocyte_ubiquitous_stage10
+relationship: part_of DOT:30
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:164
+name: perinuclear_stage2-7
+relationship: part_of DOT:39
+relationship: develops_from DOT:165
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:165
+name: perinuclear_stage8
+relationship: part_of DOT:40
+relationship: develops_from DOT:166
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:166
+name: perinuclear_stage9
+relationship: part_of DOT:41
+relationship: develops_from DOT:167
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:167
+name: perinuclear_stage10
+relationship: part_of DOT:42
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:168
+name: oocyte nucleus_stage8
+relationship: part_of DOT:71
+relationship: develops_from DOT:169
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:169
+name: oocyte nucleus_stage9
+relationship: part_of DOT:73
+relationship: develops_from DOT:170
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Term]
+id: DOT:170
+name: oocyte nucleus_stage10
+relationship: part_of DOT:74
+created_by: frantisek malinka
+creation_date: 2017-01-18T15:07:27Z
+
+[Typedef]
+id: develops_from
+name: develops_from
+is_symmetric: true
+is_transitive: true
+created_by: fanda
+creation_date: 2017-01-18T10:38:39Z
+
+[Typedef]
+id: part_of
+name: part_of
+is_transitive: true
+creation_date: 2017-01-18T10:38:24Z

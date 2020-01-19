@@ -1,2 +1,2 @@
 R CMD build .
-R CMD INSTALL sem1R_1.0.tar.gz
+R CMD INSTALL sem1R_0.99.0.tar.gz
