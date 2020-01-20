@@ -28,7 +28,6 @@ Dataset and column ontology comes from
 \url{http://tomancak-srv1.mpi-cbg.de/DOT/main.html}
 }
 \examples{
-library(sem1R)
 myExample <- getDatasetExample()
 }
 \author{Frantisek Malinka}
