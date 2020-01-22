@@ -6,6 +6,7 @@ Ontology::Ontology(std::string name, std::string pathToOntology, Rcpp::List desc
 {
     this->correct = true;
     this->ontology = NULL;
+    Rcpp::List descriptionTermsClone = Rcpp::clone(descriptionTerms);
 
     //Check parameters
     if(name.empty())
@@ -18,7 +19,7 @@ Ontology::Ontology(std::string name, std::string pathToOntology, Rcpp::List desc
         Rcpp::Rcerr << "Fill the path to ontology!" << std::endl;
         this->correct = false;
     }
-    if(descriptionTerms.size() == 0)
+    if(descriptionTermsClone.size() == 0)
     {
         Rcpp::Rcerr << "Set description of terms!" << std::endl;
         this->correct = false;
@@ -28,7 +29,7 @@ Ontology::Ontology(std::string name, std::string pathToOntology, Rcpp::List desc
     {
         this->name = name;
         this->pathToOntology = pathToOntology;
-        this->descriptionTerms = convertRList2Vector(descriptionTerms);
+        this->descriptionTerms = convertRList2Vector(descriptionTermsClone);
         this->ontoType = ontoType;
 
         Rcpp::Rcout << "[" << name  << " ONTOLOGY]" << std::endl;
@@ -39,8 +40,6 @@ Ontology::Ontology(std::string name, std::string pathToOntology, Rcpp::List desc
             this->ontology = onto;
             Rcpp::Rcout << "Number of Terms: " << onto->getTermsNumber() << " (NON-obsolete)" << std::endl;
             onto->printRoots();
-            //ontoRow.printTermIds();
-            //onto->printRoots();
         }
         else
         {

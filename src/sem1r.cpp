@@ -24,44 +24,11 @@ public:
 
     void createROWOntology(std::string name, std::string pathToOntology, Rcpp::List descriptionTerms);
     void createCOLOntology(std::string name, std::string pathToOntology, Rcpp::List descriptionTerms);
-    //void createTestROWOntology(std::string name, Rcpp::List descriptionTerms);
-    //void createTestCOLOntology(std::string name, Rcpp::List descriptionTerms);
 
-    //void loadDatasets();
-
-    void setDataset(Rcpp::NumericMatrix data_) {this->data = data_; armaData = as<arma::mat>(data_); pipelineCODE[SET_DATASET] = 1;}
-    //Rcpp::NumericMatrix getDataset() { return data; }
-    //arma::mat* getArmaDataset() {return &(this->armaData);}
-
+    void setDataset(Rcpp::NumericMatrix data_) {this->data = data_; armaData = as<arma::mat>(data_); pipelineCODE[SET_DATASET] = 1;}    
     Rcpp::List findDescription();
     Rcpp::List computeTermsEnrichment();
-
-    //double significantTest(int iterate, Rcpp::NumericVector tmpGene, Rcpp::NumericVector tmpSample);
-    //Rcpp::NumericMatrix countDist(Rcpp::NumericMatrix bicMatrix);
-    //void combineBiclusters(Rcpp::NumericVector tmpGene1, Rcpp::NumericVector tmpSample1, Rcpp::NumericVector tmpGene2, Rcpp::NumericVector tmpSample2, Rcpp::NumericMatrix data);
-    //void combineBiclusters(Rcpp::NumericVector tmpGene1, Rcpp::NumericVector tmpSample1, Rcpp::NumericVector *tmpGene2, Rcpp::NumericVector *tmpSample2, Rcpp::NumericMatrix *data);
-
-    //void printColAncester(std::string fbgnid);
-    //void printAllColAncester(std::string fbgnid);
-    //void printColTopAncester(std::string fbgnid);
-    //Rcpp::NumericMatrix getSimilaritySemanticMatrix(std::string ontologyName);
-    //int getXORscore(Rcpp::NumericVector tmpGene, Rcpp::NumericVector tmpSample);
-    //int getCorrectscore(Rcpp::NumericVector tmpGene, Rcpp::NumericVector tmpSample);
-    //double getSemanticRowscore(Rcpp::NumericVector tmp);
-    //double getSemanticColscore(Rcpp::NumericVector tmp);
     void printParetoSettings();
-
-    //Rcpp::List fisher_test_cpp(const Rcpp::NumericMatrix& x, double conf_level);
-
-
-   // Rcpp::DataFrame getPropositionalDataFrame();
-   // Rcpp::DataFrame getEnrichPropositionalDataFrame();
-   // Rcpp::DataFrame getEnrichPropositionalDataFrame2();
-
-    //Rcpp::LogicalVector getClassLabel();
-
-    //Rcpp::DataFrame getROCcordinates();
-    //Rcpp::LogicalVector getCoveredVector();
 
     int filterTh;
     int ruleDepth;
@@ -75,45 +42,22 @@ public:
 
 private:
     boost::unordered_map<std::string, Ontology*> rowOntology;
-    boost::unordered_map<std::string, Ontology*> colOntology;    
-    //boost::unordered_map<std::string, std::vector<std::vector<std::string> > > rowTestOntologyDesc;
-    //boost::unordered_map<std::string, std::vector<std::vector<std::string> > > colTestOntologyDesc;
+    boost::unordered_map<std::string, Ontology*> colOntology;        
 
     Rcpp::NumericMatrix data;
-    //Rcpp::NumericMatrix testdata;
     arma::mat armaData;
     arma::mat testarmaData;
-    //std::vector<paretoSet> optimum;
-
     std::vector<newComplexStat> ruleset;
 
     Rcpp::DataFrame propositionTable;
     Rcpp::DataFrame enrichPropositionTable;
     Rcpp::DataFrame enrichPropositionTable2;
     mydataframe enrichPropositionTable3;
-
-    //int checkTermDescription();
-    //void printHypothesis(hypothesis *hyp);
-    //double evaluate(arma::vec *rowBitset, arma::vec *colBitset, hypothesis *hyp, double (sem1R::*fcePtrEval)(arma::mat *, arma::mat *));
-    //std::vector<hypothesis> findNewLGN();
-    //arma::Col<size_t> getAssignmentsKmeans(std::vector<paretoSet> *paretoSet, int kbic);
-    //int getPosExamples();
-    //int getNegExamples();
-    //double getHyperGeometricScore(int *successSample, int *successPop, int *failurePop, int *sampleSize);
-
-    //evaluation functions
-    //double myVAR(arma::mat *templ, arma::mat *original);
-    //double myXOR(arma::mat *templ, arma::mat *original);
     
     std::string getPrintableRuleID(newComplexStat *toPrint);
     Rcpp::CharacterVector getRuleID(newComplexStat *toPrint);
     std::string getPrintableRuleDetail(newComplexStat *toPrint);
-    Rcpp::CharacterVector getRuleDetail(newComplexStat *toPrint);
-
-
-    //std::vector<paretoSet> runNSGA(int population, int generations, int kbics, double pcross, double pmut, double eta_c, double eta_m, double f1cutScore, int initPop);
-    void buildTrainingExamples(std::vector< std::vector<boost::dynamic_bitset<>* > > *examples, arma::umat *indexes, std::vector<Ontology *> *refOntologies);
-    void buildTrainingExamples(std::vector< std::vector<boost::dynamic_bitset<>* > > *examples, arma::umat *indexMatrix, std::vector<Ontology *> *refOntologies, std::vector<boost::unordered_map<int, bool> > *indexPosExamples);
+    Rcpp::CharacterVector getRuleDetail(newComplexStat *toPrint);   
 };
 
 RCPP_MODULE(mod_data)
@@ -151,6 +95,8 @@ sem1R::sem1R()
     this->minLevel = -1;
     this->ruleFormat = "both";
     this->verbose = 0;
+
+    omp_set_num_threads(1);
 }
 
 void sem1R::printParetoSettings()
@@ -245,94 +191,6 @@ Rcpp::CharacterVector sem1R::getRuleDetail(newComplexStat *toPrint)
     return rule;
 }
 
-/*
-double sem1R::getHyperGeometricScore(int *successSample, int *successPop, int *failurePop, int *sampleSize)
-{
-    //http://users.unimi.it/marray/2007/material/day4/Lecture7.pdf
-    int log = 0;
-    int lower = 0;
-    return R::phyper(*successSample - 1, *successPop, *failurePop, *sampleSize, lower, log );
-}
-*/
-/*
-Rcpp::DataFrame sem1R::getPropositionalDataFrame()
-{
-    return this->propositionTable;
-}
-
-Rcpp::DataFrame sem1R::getEnrichPropositionalDataFrame()
-{
-    return this->enrichPropositionTable;
-}
-
-Rcpp::DataFrame sem1R::getEnrichPropositionalDataFrame2()
-{
-    return this->enrichPropositionTable2;
-}
-*/
-
-/*
-void sem1R::printColAncester(std::string fbgnid)
-{
-    boost::unordered_map<std::string, Node*> *hash = this->colOntology["FBGN"]->getOntologyParser()->getBottomUP();
-    Node *nnodes = (*hash)[fbgnid];
-    if(nnodes->relationship.empty())
-    {
-        Rcpp::Rcout << "#root#" << std::endl;
-    }
-    Rcpp::Rcout << "node relationship size: " << nnodes->relationship.size() << std::endl;
-    for(std::vector<edge>::iterator iedge = nnodes->relationship.begin(); iedge != nnodes->relationship.end(); ++iedge)
-    {
-        if(iedge->end != NULL)
-        {
-           Rcpp::Rcout << "id:" << iedge->end->id << " id2: " << iedge->end->idNum << std::endl;
-        }
-        else
-            Rcpp::Rcout << "konec" << std::endl;
-    }
-}
-
-void sem1R::printAllColAncester(std::string fbgnid)
-{
-    boost::unordered_map<std::string, Node*> *hash = this->colOntology["FBGN"]->getOntologyParser()->getBottomUP();
-    Node *nnodes = (*hash)[fbgnid];
-    if(nnodes->relationship.empty())
-    {
-        ;//Rcpp::Rcout << "#root#" << std::endl;
-    }
-    //Rcpp::Rcout << "node relationship size: " << nnodes->relationship.size() << std::endl;
-    for(std::vector<edge>::iterator iedge = nnodes->relationship.begin(); iedge != nnodes->relationship.end(); ++iedge)
-    {
-        if(iedge->end != NULL)
-        {
-           Rcpp::Rcout << fbgnid << "->" << "id:" << iedge->end->id << " id2: " << iedge->end->idNum << std::endl;
-           printAllColAncester(iedge->end->id);
-        }
-        else
-            ;//Rcpp::Rcout << "konec" << std::endl;
-    }
-}
-
-void sem1R::printColTopAncester(std::string fbgnid)
-{
-    boost::unordered_map<std::string, Node*> *hash = this->colOntology["FBGN"]->getOntologyParser()->getTopDown();
-    Node *nnodes = (*hash)[fbgnid];
-    if(nnodes->relationship.empty())
-    {
-        Rcpp::Rcout << "#root#" << std::endl;
-    }
-    Rcpp::Rcout << "node relationship size: " << nnodes->relationship.size() << std::endl;
-    for(std::vector<edge>::iterator iedge = nnodes->relationship.begin(); iedge != nnodes->relationship.end(); ++iedge)
-    {
-        if(iedge->end != NULL)
-        {
-           Rcpp::Rcout << "id:" << iedge->end->id << " id2: " << iedge->end->idNum << std::endl;
-        }
-        else
-            Rcpp::Rcout << "konec" << std::endl;
-    }
-}
-*/
 void sem1R::createCOLOntology(std::string name, std::string pathToOntology, Rcpp::List descriptionTerms)
 {
     if(printAndCheckPipeline(SET_COL_ONTOLOGY) == PIPELINE_UNACCEPTED)
@@ -372,158 +230,7 @@ void sem1R::createROWOntology(std::string name, std::string pathToOntology, Rcpp
     else
         Rcpp::Rcerr << "Ontology cannot be loaded!" << std::endl;
 }
-/*
-void sem1R::createTestROWOntology(std::string name, Rcpp::List descriptionTerms)
-{
-    //if(printAndCheckPipeline(SET_ROW_ONTOLOGY) == PIPELINE_UNACCEPTED)
-    //    return;
 
-    //Ontology *newRowOntology = new Ontology(name, pathToOntology, descriptionTerms, ROW_ONTOLOGY);
-
-    if(rowOntology[name] != NULL)
-    {
-        //rowTestOntologyDesc[name] = rowOntology[name]->convertRList2Vector(descriptionTerms);
-        rowOntology[name]->addDescriptionTermsTest(rowOntology[name]->convertRList2Vector(descriptionTerms));
-        rowOntology[name]->precomputeSemanticPatternsTest(this->testdata.nrow());
-    }
-    else
-        Rcpp::Rcerr << "Ontology name is not found!" << std::endl;
-}
-
-void sem1R::createTestCOLOntology(std::string name, Rcpp::List descriptionTerms)
-{
-    //if(printAndCheckPipeline(SET_ROW_ONTOLOGY) == PIPELINE_UNACCEPTED)
-    //    return;
-
-    //Ontology *newRowOntology = new Ontology(name, pathToOntology, descriptionTerms, ROW_ONTOLOGY);
-
-    if(colOntology[name] != NULL)
-    {
-        //colTestOntologyDesc[name] = colOntology[name]->convertRList2Vector(descriptionTerms);
-        colOntology[name]->addDescriptionTermsTest(colOntology[name]->convertRList2Vector(descriptionTerms));
-        colOntology[name]->precomputeSemanticPatternsTest(this->testdata.ncol());
-    }
-    else
-        Rcpp::Rcerr << "Ontology name is not found!" << std::endl;
-}
-*/
-/*
-Rcpp::NumericMatrix sem1R::getSimilaritySemanticMatrix(std::string ontologyName)
-{
-    Ontology* onto;
-    if(this->rowOntology.count(ontologyName))
-    {
-        onto = this->rowOntology[ontologyName];
-    }
-    else if(this->colOntology.count(ontologyName))
-    {
-        onto = this->colOntology[ontologyName];
-    }
-    else
-    {
-        Rcpp::Rcerr << "Ontology name is not found!" << std::endl;
-        Rcpp::NumericMatrix simMatrix;
-        return simMatrix;
-    }
-
-    std::vector<std::vector<double> > matrix = onto->getSemanticSimilarityMatrix();
-    Rcpp::NumericMatrix simMatrix(matrix.size(), matrix.size());
-    for(int i = 0; i < matrix.size(); ++i)
-    {
-        for(int j = 0; j < matrix.size(); ++j)
-        {
-            simMatrix(i,j) = matrix[i][j];
-            //Rcpp::Rcout << matrix[i][j]<< std::endl;
-        }
-    }
-    return simMatrix;
-}
-
-int sem1R::getXORscore(Rcpp::NumericVector tmpGene, Rcpp::NumericVector tmpSample)
-{
-     return Evaluate::evaluateXOR(&tmpGene, &tmpSample, this->getArmaDataset());
-}
-
-int sem1R::getCorrectscore(Rcpp::NumericVector tmpGene, Rcpp::NumericVector tmpSample)
-{
-     return Evaluate::evaluateCorrectPrediction(&tmpGene, &tmpSample, this->getArmaDataset());
-}
-
-double sem1R::getSemanticRowscore(Rcpp::NumericVector tmp)
-{
-     return Evaluate::evaluateSemantic(&tmp, &(this->rowOntology));
-}
-
-double sem1R::getSemanticColscore(Rcpp::NumericVector tmp)
-{
-     return Evaluate::evaluateSemantic(&tmp, &(this->colOntology));
-}
-
-*/
-
-/*
-double sem1R::significantTest(int iterate, Rcpp::NumericVector tmpGene, Rcpp::NumericVector tmpSample)
-{
-    //fix size
-    int size = Rcpp::sum(tmpGene)+Rcpp::sum(tmpSample);
-    //set seed
-    Rcpp::Environment base_env("package:base");
-    Rcpp::Function set_seed_r = base_env["set.seed"];
-    set_seed_r(123);
-
-    //reference values
-    int refXOR = Evaluate::evaluateXOR(&tmpGene, &tmpSample, this->getArmaDataset());
-    int refCorrectPred = Evaluate::evaluateCorrectPrediction(&tmpGene, &tmpSample, this->getArmaDataset());
-    double refSemGen = Evaluate::evaluateSemantic(&tmpGene, &(this->rowOntology));
-    double refSemSam = Evaluate::evaluateSemantic(&tmpSample, &(this->colOntology));
-
-    Rcpp::Rcout << "ref XOR " << refXOR << std::endl;
-    Rcpp::Rcout << "ref CorrectPred " << refCorrectPred << std::endl;
-    Rcpp::Rcout << "ref Sem Gen " << refSemGen << std::endl;
-    Rcpp::Rcout << "ref Sem Sam " << refSemSam << std::endl;
-
-
-
-    //Rcpp::Rcout << tmpGene.length() << std::endl;
-    //Rcpp::Rcout << tmpSample.length() << std::endl;
-
-    int betterRandom = 0;
-    Rcpp::IntegerVector vectorLimit = Rcpp::seq_len(tmpGene.length()+tmpSample.length());
-    for(int i = 0; i < iterate; ++i)
-    {
-        Rcpp::NumericVector randomBic = RcppArmadillo::sample((Rcpp::NumericVector)vectorLimit, size, FALSE); //interval, how many, replacement
-        //Rcpp::Rcout << randomBic << std::endl;
-
-        Rcpp::NumericVector rndGene(tmpGene.length(),0);
-        Rcpp::NumericVector rndSample(tmpSample.length(),0);
-        int nrow = rndGene.length();
-        int ncol = rndSample.length();
-
-        //make a subsets
-        //iterate over rows/genes
-        for(int bitrow = 0; bitrow < nrow; ++bitrow)
-        {
-            //for more speed use [] instead of () -> bound check will be disable
-            if(randomBic[bitrow] == 1)
-                rndGene(bitrow) = 1;
-        }
-        //iterate over columns/samples
-        for(int bitcol = nrow; bitcol < nrow + ncol; ++bitcol)
-        {
-            //for more speed use [] instead of () -> bound check will be disable
-            if(randomBic[bitcol] == 1)
-                rndSample(bitcol-nrow) = 1;
-        }
-
-        if(Evaluate::evaluateCorrectPrediction(&rndGene, &rndSample, this->getArmaDataset()) <=  refCorrectPred &&
-                Evaluate::evaluateSemantic(&rndGene, &(this->rowOntology)) <= refSemGen &&
-                Evaluate::evaluateSemantic(&rndSample, &(this->colOntology)) <= refSemSam)
-            betterRandom++;
-
-    }
-    return (double)betterRandom/iterate;
-}
-*/
 Rcpp::List sem1R::computeTermsEnrichment()
 {
     std::vector<Ontology *> refOntologies;
@@ -562,7 +269,6 @@ Rcpp::List sem1R::findDescription()
     //if(printAndCheckPipeline(SET_DESCRIPTION_BICS) == PIPELINE_UNACCEPTED)
     //    return PIPELINE_UNACCEPTED;
 
-    //this->printParetoSettings();
     //prepare ontologies
     std::vector<Ontology *> refOntologies;
 
@@ -595,6 +301,18 @@ Rcpp::List sem1R::findDescription()
     {
             dataRownames = Rcpp::rownames(this->data);
             dataColnames = Rcpp::colnames(this->data);
+    }
+    else
+    {
+        if(Rf_isNull(Rcpp::rownames(this->data)))
+        {
+            Rcpp::Rcerr << "Rownames of the input dataset are not set!" << std::endl;
+        }
+        if(Rf_isNull(Rcpp::colnames(this->data)))
+        {
+            Rcpp::Rcerr << "Rownames of the input dataset are not set!" << std::endl;
+        }
+        return Rcpp::List();
     }
 
     printParetoSettings();
@@ -811,188 +529,3 @@ Rcpp::List sem1R::findDescription()
 return hypothesis;
 
 }
-
-void sem1R::buildTrainingExamples(std::vector< std::vector<boost::dynamic_bitset<>* > > *examples, arma::umat *indexMatrix, std::vector<Ontology *> *refOntologies)
-{
-
-    //iterate over all potencial examples
-    for(int iElem = 0; iElem < indexMatrix->n_cols; ++iElem)
-    {
-        int row = indexMatrix->col(iElem)[0]; //row index
-        int col = indexMatrix->col(iElem)[1];  //col index
-
-        for(int iOnto = 0; iOnto < refOntologies->size(); ++iOnto)
-        {
-            if((*refOntologies)[iOnto]->getOntoType() == ROW_ONTOLOGY)
-                (*examples)[iElem].push_back((*refOntologies)[iOnto]->getSemanticPattern(row));
-            else
-                (*examples)[iElem].push_back((*refOntologies)[iOnto]->getSemanticPattern(col));
-        }
-    }
-}
-
-void sem1R::buildTrainingExamples(std::vector< std::vector<boost::dynamic_bitset<>* > > *examples, arma::umat *indexMatrix, std::vector<Ontology *> *refOntologies, std::vector<boost::unordered_map<int, bool> > *indexPosExamples)
-{
-    //prepare hash of indexes for positive examples
-    for(int iOnto = 0; iOnto < refOntologies->size(); ++iOnto)
-    {
-        boost::unordered_map<int, bool> tmpHash;
-        indexPosExamples->push_back(tmpHash);
-    }
-    //iterate over all potencial examples
-    for(int iElem = 0; iElem < indexMatrix->n_cols; ++iElem)
-    {
-        int row = indexMatrix->col(iElem)[0]; //row index
-        int col = indexMatrix->col(iElem)[1];  //col index
-
-        for(int iOnto = 0; iOnto < refOntologies->size(); ++iOnto)
-        {
-            if((*refOntologies)[iOnto]->getOntoType() == ROW_ONTOLOGY)
-            {
-                (*examples)[iElem].push_back((*refOntologies)[iOnto]->getSemanticPattern(row));
-                (*indexPosExamples)[iOnto][row] = 1;   //row index for positive examples
-            }
-            else
-            {
-                (*examples)[iElem].push_back((*refOntologies)[iOnto]->getSemanticPattern(col));
-                (*indexPosExamples)[iOnto][col] = 1; //col index for positive examples
-            }
-        }
-    }
-}
-
-/*
-Rcpp::NumericMatrix sem1R::countDist(Rcpp::NumericMatrix bicMatrix)
-{
-    int nbics = bicMatrix.nrow();
-    int sizeBic = bicMatrix.ncol();
-    Rcpp::NumericMatrix dist(nbics, nbics);
-    Rcpp::Rcout << "nbics: " << nbics << std::endl;
-    Rcpp::Rcout << "sizeBic: " << sizeBic << std::endl;
-
-    //convert vector to binary set
-    std::vector< boost::dynamic_bitset<> > bitsets;
-    for(int i = 0; i < nbics; ++i)
-    {
-        boost::dynamic_bitset<> tmpbit(sizeBic, 0);
-        for(int ibit = 0; ibit < sizeBic; ++ibit)
-        {
-            if(bicMatrix(i,ibit) == 1)
-                tmpbit[ibit] = 1;
-        }
-        bitsets.push_back(tmpbit);
-    }
-
-    for(int i = 0; i < nbics; ++i)
-    {
-        for(int j = i+1; j < nbics; ++j)
-        {
-            boost::dynamic_bitset<> xorset;
-            xorset = bitsets[i] ^ bitsets[j];
-            double sim = (double) (sizeBic - xorset.count()) / sizeBic;
-            dist(i,j) = sim;
-            dist(j,i) = sim;
-        }
-    }
-
-    return dist;
-}
-*/
-/*
-double sem1R::myXOR(arma::mat *templ, arma::mat *original)
-{
-    arma::uvec indeces = find(*templ); //find non zero --- indexes
-    arma::vec elementsTempl = (*templ)(indeces);
-
-    arma::vec origVector = (arma::vectorise(*original));
-    arma::vec elementsOrig = origVector(indeces);  //vector with selected elements
-
-    return arma::accu(arma::abs(elementsOrig-elementsTempl));
-}
-
-double sem1R::myVAR(arma::mat *templ, arma::mat *original)
-{
-    arma::uvec indeces = find(*templ); //find non zero --- indexes
-    arma::vec origVector = (arma::vectorise(*original));
-    arma::vec elements = origVector(indeces);  //vector with selected elements
-    return arma::var(elements);
-}
-*/
-
-/*
-std::vector<hypothesis> sem1R::findNewLGN()
-{
-    std::vector<hypothesis> newRoots;
-
-    //find new roots for row ontologies
-    for(boost::unordered_map<std::string, Ontology*>::iterator irOnto = this->rowOntology.begin(); irOnto != this->rowOntology.end(); ++irOnto)
-    {
-        //Rcpp::Rcout << "Starting find new roots in: " << irOnto->first << std::endl;
-        std::vector<Node*> tmpRoot = irOnto->second->findLGNroots();
-        for(std::vector<Node*>::iterator it = tmpRoot.begin(); it != tmpRoot.end(); ++it)
-        {
-            hypothesis hypothes;
-            hypothes.score = 0;
-            hypothes.rowOntology.push_back(irOnto->second);
-            boost::unordered_map<std::string, bool> id;
-            id[(*it)->id] = true;
-            hypothes.ids[irOnto->second] = id;
-            newRoots.push_back(hypothes);
-        }
-    }
-    //find new roots for col ontologies
-    for(boost::unordered_map<std::string, Ontology*>::iterator icOnto = this->colOntology.begin(); icOnto != this->colOntology.end(); ++icOnto)
-    {
-        //Rcpp::Rcout << "Starting find new roots in: " << icOnto->first << std::endl;
-        std::vector<Node*> tmpRoot = icOnto->second->findLGNroots();
-        for(std::vector<Node*>::iterator it = tmpRoot.begin(); it != tmpRoot.end(); ++it)
-        {
-            hypothesis hypothes;
-            hypothes.score = 0;
-            hypothes.colOntology.push_back(icOnto->second);
-            boost::unordered_map<std::string, bool> id;
-            id[(*it)->id] = true;
-            hypothes.ids[icOnto->second] = id;
-            newRoots.push_back(hypothes);
-        }
-    }
-    return newRoots;
-}
-
-void sem1R::printHypothesis(hypothesis *hyp)
-{
-    for(boost::unordered_map<Ontology*,boost::unordered_map<std::string, bool> >::iterator iOnto = hyp->ids.begin(); iOnto != hyp->ids.end(); ++iOnto)
-    {
-        for(boost::unordered_map<std::string, bool>::iterator istring = iOnto->second.begin(); istring != iOnto->second.end(); ++istring)
-        {
-            Rcpp:Rcout << istring->first << " ";
-        }
-    }
-}
-*/
-
-/*
-int sem1R::checkTermDescription()
-{
-    //col ontology
-    bool error = false;
-    for(boost::unordered_map<std::string, Ontology*>::iterator icol = colOntology.begin(); icol != colOntology.end(); ++icol)
-    {
-        if(icol->second->getDescriptionTerms().size() != data.ncol())
-        {
-            Rcpp::Rcerr << icol->first << " ontology and term description have unequal size!" << std::endl;
-            error = true;
-        }
-    }
-    //row ontology
-    for(boost::unordered_map<std::string, Ontology*>::iterator irow = rowOntology.begin(); irow != rowOntology.end(); ++irow)
-    {
-        if(irow->second->getDescriptionTerms().size() != data.nrow())
-        {
-            Rcpp::Rcerr << irow->first << " ontology and term description have unequal size!" << std::endl;
-            error = true;
-        }
-    }
-    return error;
-}
-*/
