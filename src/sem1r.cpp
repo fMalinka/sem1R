@@ -25,7 +25,7 @@ public:
     void createROWOntology(std::string name, std::string pathToOntology, Rcpp::List descriptionTerms);
     void createCOLOntology(std::string name, std::string pathToOntology, Rcpp::List descriptionTerms);
 
-    void setDataset(Rcpp::NumericMatrix data_) {this->data = data_; armaData = as<arma::mat>(data_); pipelineCODE[SET_DATASET] = 1;}    
+    void setDataset(Rcpp::NumericMatrix data_) {this->data = data_; armaData = as<arma::mat>(data_); this->rowOntology.clear(); this->colOntology.clear(); printAndCheckPipeline(SET_DATASET);}
     Rcpp::List findDescription();
     Rcpp::List computeTermsEnrichment();
     void printParetoSettings();
@@ -235,6 +235,9 @@ void sem1R::createROWOntology(std::string name, std::string pathToOntology, Rcpp
 
 Rcpp::List sem1R::computeTermsEnrichment()
 {
+    if(printAndCheckPipeline(SET_DESCRIPTION_BICS) == PIPELINE_UNACCEPTED)
+        return Rcpp::List();
+
     std::vector<Ontology *> refOntologies;
 
     for(boost::unordered_map<std::string, Ontology *>::iterator it = this->rowOntology.begin(); it != this->rowOntology.end(); ++it)
@@ -257,6 +260,18 @@ Rcpp::List sem1R::computeTermsEnrichment()
             dataRownames = Rcpp::rownames(this->data);
             dataColnames = Rcpp::colnames(this->data);
     }
+    else
+    {
+        if(Rf_isNull(Rcpp::rownames(this->data)))
+        {
+            Rcpp::Rcerr << "Rownames of the input dataset are not set!" << std::endl;
+        }
+        if(Rf_isNull(Rcpp::colnames(this->data)))
+        {
+            Rcpp::Rcerr << "Rownames of the input dataset are not set!" << std::endl;
+        }
+        return Rcpp::List();
+    }
 
     printParetoSettings();
 
@@ -268,8 +283,8 @@ Rcpp::List sem1R::computeTermsEnrichment()
 
 Rcpp::List sem1R::findDescription()
 {
-    //if(printAndCheckPipeline(SET_DESCRIPTION_BICS) == PIPELINE_UNACCEPTED)
-    //    return PIPELINE_UNACCEPTED;
+    if(printAndCheckPipeline(SET_DESCRIPTION_BICS) == PIPELINE_UNACCEPTED)
+        return Rcpp::List();
 
     //prepare ontologies
     std::vector<Ontology *> refOntologies;
