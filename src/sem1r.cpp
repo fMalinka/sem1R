@@ -202,7 +202,8 @@ void sem1R::createCOLOntology(std::string name, std::string pathToOntology, Rcpp
         if(colOntology[name] == NULL)
         {
             newColOntology->precomputeSemanticPatterns(this->data.ncol());
-            colOntology[name] = newColOntology;
+            if(newColOntology->isCorrect())
+                colOntology[name] = newColOntology;
         }
         else
             Rcpp::Rcerr << "Ontology name is not unique!" << std::endl;
@@ -222,7 +223,8 @@ void sem1R::createROWOntology(std::string name, std::string pathToOntology, Rcpp
         if(rowOntology[name] == NULL)
         {
             newRowOntology->precomputeSemanticPatterns(this->data.nrow());
-            rowOntology[name] = newRowOntology;
+            if(newRowOntology->isCorrect())
+                rowOntology[name] = newRowOntology;
         }
         else
             Rcpp::Rcerr << "Ontology name is not unique!" << std::endl;

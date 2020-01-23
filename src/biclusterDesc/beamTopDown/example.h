@@ -15,9 +15,6 @@ public:
     Example(arma::mat *testarmaData, boost::unordered_map<std::string, std::vector<std::vector<std::string> > > *rowTestOntologyDesc, boost::unordered_map<std::string, std::vector<std::vector<std::string> > > *colTestOntologyDesc, std::vector<Ontology *> *refOntologies, int verbose);
     ~Example();
 
-    void findPositiveExamples(double threshold);
-    void findNegativeExamples(double threshold);
-
     //sem1r version!!!!!
     void findPositiveExamples();
     void findNegativeExamples();
@@ -67,13 +64,8 @@ private:
     arma::Col<size_t> *bicAssign;
 
     arma::mat sumMatOverAll;
-    //std::vector<std::vector<boost::unordered_map<int, bool> > > indexPosExamples;
     std::vector<boost::unordered_map<int, bool> > indexPosExamples;
-    //std::vector<Rcpp::LogicalVector> featureVector;
-    //Rcpp::LogicalVector featureClass;
-    //std::vector<std::string> featureName;
 
-    //std::vector< std::vector< std::vector<boost::dynamic_bitset<>* > > > POSexamples;
     std::vector< std::vector<boost::dynamic_bitset<>* > > POSexamples;
     std::vector< std::vector<boost::dynamic_bitset<>* > > NEGexamples;
 

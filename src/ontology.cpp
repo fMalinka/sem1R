@@ -374,73 +374,35 @@ std::vector<std::vector<std::string> > Ontology::convertRList2Vector(Rcpp::List 
 
 void Ontology::precomputeSemanticPatterns(int vectorsize)
 {
-    this->SemanticPatterns.resize(vectorsize);
-    for(int ivec = 0; ivec < vectorsize; ++ivec)
+    if(vectorsize != this->descriptionTerms.size())
     {
-        boost::dynamic_bitset<> *pattern = new boost::dynamic_bitset<>(this->getOntologyParser()->getTermsNumber(),0);
-
-        //terms from descriptions
-        std::vector<std::string> terms = this->descriptionTerms[ivec];
-
-        for(std::vector<std::string>::iterator iterm = terms.begin(); iterm != terms.end(); ++iterm)
-        {
-            Node *termNode = this->getOntologyParser()->getNodesBottomUP(&(*iterm));
-            if(termNode != NULL)
-            {
-                *pattern |= this->getTermBitAncestors(termNode);
-            }
-        }
-        //std::cout << "pattern: " << ivec << " count:" << pattern->count() << std::endl;
-        this->SemanticPatterns[ivec] = pattern;
+        Rcpp::Rcerr << "Size of data matrix and description list is different! [ERROR]" << std::endl;
+        this->correct = false;
     }
-/*
-    //matrix initialization
-    this->precomputedDistanceMatrix.resize(vectorsize);
-    for(int i = 0; i < vectorsize; ++i)
+    else
     {
-        this->precomputedDistanceMatrix[i].resize(vectorsize);
-    }
-
-    //precompute score as a distance matrix
-    for(int r = 0; r < vectorsize; ++r)
-    {
-        for(int c = r+1; c < vectorsize; ++c)
+        this->SemanticPatterns.resize(vectorsize);
+        for(int ivec = 0; ivec < vectorsize; ++ivec)
         {
-            int common = ((*SemanticPatterns[r]) | (*SemanticPatterns[c])).count();
-            int intersect = ((*SemanticPatterns[r]) & (*SemanticPatterns[c])).count();
+            boost::dynamic_bitset<> *pattern = new boost::dynamic_bitset<>(this->getOntologyParser()->getTermsNumber(),0);
 
-            double score = 0;
-            if(common != 0)
+            //terms from descriptions
+            std::vector<std::string> terms = this->descriptionTerms[ivec];
+
+            for(std::vector<std::string>::iterator iterm = terms.begin(); iterm != terms.end(); ++iterm)
             {
-                score = intersect/(double)common;
+                Node *termNode = this->getOntologyParser()->getNodesBottomUP(&(*iterm));
+                if(termNode != NULL)
+                {
+                    *pattern |= this->getTermBitAncestors(termNode);
+                }
+                else
+                {
+                    Rcpp::Rcerr << "Decription term '" << *iterm << "'' has not been found in " << this->getName() << " ontology! [IGNORED]" << std::endl;
+                }
             }
-            //symetric relationship
-            this->precomputedDistanceMatrix[r][c] = score;
-            this->precomputedDistanceMatrix[c][r] = score;
+            //std::cout << "pattern: " << ivec << " count:" << pattern->count() << std::endl;
+            this->SemanticPatterns[ivec] = pattern;
         }
-    }
-    */
-}
-
-void Ontology::precomputeSemanticPatternsTest(int vectorsize)
-{
-    this->SemanticPatternsTest.resize(vectorsize);
-    for(int ivec = 0; ivec < vectorsize; ++ivec)
-    {
-        boost::dynamic_bitset<> *pattern = new boost::dynamic_bitset<>(this->getOntologyParser()->getTermsNumber(),0);
-
-        //terms from descriptions
-        std::vector<std::string> terms = this->descriptionTermsTest[ivec];
-
-        for(std::vector<std::string>::iterator iterm = terms.begin(); iterm != terms.end(); ++iterm)
-        {
-            Node *termNode = this->getOntologyParser()->getNodesBottomUP(&(*iterm));
-            if(termNode != NULL)
-            {
-                *pattern |= this->getTermBitAncestors(termNode);
-            }
-        }
-        //std::cout << "pattern: " << ivec << " count:" << pattern->count() << std::endl;
-        this->SemanticPatternsTest[ivec] = pattern;
     }
 }

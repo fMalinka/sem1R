@@ -45,7 +45,6 @@ public:
     std::vector<Node*> findLGNroots();
     std::string getName() {return this->name;}
     void precomputeSemanticPatterns(int vectorsize);
-    void precomputeSemanticPatternsTest(int vectorsize);
     std::vector<boost::dynamic_bitset<> *> getSemanticPatterns() {return this->SemanticPatterns;}
     boost::dynamic_bitset<>* getSemanticPattern(int ipattern) {return this->SemanticPatterns[ipattern];}
     boost::dynamic_bitset<>* getSemanticPatternTest(int ipattern) {return this->SemanticPatternsTest[ipattern];}
@@ -54,7 +53,7 @@ public:
     std::vector<std::vector<double> > getSemanticSimilarityMatrix() { return this->precomputedDistanceMatrix;}
     std::vector<std::vector<std::string> > convertRList2Vector(Rcpp::List desc);
     void addDescriptionTermsTest(std::vector<std::vector<std::string> > descriptionTermsTest) {this->descriptionTermsTest = descriptionTermsTest;}
-    boost::dynamic_bitset<> getTermBitAncestors(Node *searched);
+    boost::dynamic_bitset<> getTermBitAncestors(Node *searched);    
 private:
     std::string name;
     std::string pathToOntology;

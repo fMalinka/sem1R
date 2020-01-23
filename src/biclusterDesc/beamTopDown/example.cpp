@@ -25,59 +25,6 @@ Example::Example(arma::mat *testarmaData, boost::unordered_map<std::string, std:
     this->verbose = verbose;
 }
 
-
-void Example::findPositiveExamples(double threshold)
-{
-    /*
-    arma::mat sumMatOverAll(armaData->n_rows, armaData->n_cols, arma::fill::zeros);
-    //pareto bicluster -> example->ontology->bitset
-    std::vector< std::vector< std::vector<boost::dynamic_bitset<>* > > > POSexamples;//tPos.n_cols);
-
-    for(int ibic = 0; ibic < this->kbics; ++ibic)
-    {
-        //semanticBicluster tmpBic;
-        arma::mat sumMat(armaData->n_rows, armaData->n_cols, arma::fill::zeros);
-        int irow = 0;
-        for(int iparetoBic = ibic; iparetoBic < bicAssign->size(); iparetoBic += this->kbics)
-        {
-            arma::mat tmp = (*myparetoSet)[irow].chromozome[2*ibic] * arma::trans((*myparetoSet)[irow].chromozome[2*ibic+1]);
-            sumMat += tmp;
-            sumMatOverAll += tmp;
-            ++irow;
-        }
-
-        //find positive examples in bicluster
-        arma::uvec indices = arma::find(sumMat > (threshold * arma::max(arma::max(sumMat))));
-        arma::umat tPos = arma::ind2sub(arma::size(sumMat), indices);
-
-        std::cout << "Positive examples: " << tPos.n_cols << std::endl;
-
-
-        //POSITIVE EXAMPLE
-        std::vector< std::vector<boost::dynamic_bitset<>* > > actPositive(tPos.n_cols);
-        this->buildTrainingExamples(&actPositive, &tPos, refOntologies, &indexPosExamples);
-        POSexamples.push_back(actPositive);
-    }
-    this->sumMatOverAll = sumMatOverAll;
-    this->POSexamples = POSexamples;
-    */
-}
-
-void Example::findNegativeExamples(double threshold)
-{
-    /*
-    arma::uvec indicesNeg = arma::find(this->sumMatOverAll < (threshold * arma::max(arma::max(this->sumMatOverAll))));
-    arma::umat tNeg = arma::ind2sub(arma::size(this->sumMatOverAll), indicesNeg);
-
-    std::vector< std::vector<boost::dynamic_bitset<>* > > NEGexamples(tNeg.n_cols);
-
-    this->buildTrainingExamples(&NEGexamples, &tNeg, refOntologies);
-    this->NEGexamples = NEGexamples;
-
-    std::cout << "Negative examples: " << tNeg.n_cols << std::endl;
-    */
-}
-
 //sem1r version !!!!!!!
 void Example::findPositiveExamples()
 {

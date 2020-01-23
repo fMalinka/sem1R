@@ -209,7 +209,10 @@ void OntologyParser::parseData(std::vector<std::string> *dataTerm , std::vector<
     {
         for(std::vector<edge>::iterator iedge = typeNodes.at(i)->relationship.begin(); iedge != typeNodes.at(i)->relationship.end(); ++iedge)
         {
-            (*iedge).end = this->mapNodesBottomUP[(*iedge).tmpend];
+            if(this->mapNodesBottomUP.find((*iedge).tmpend) != this->mapNodesBottomUP.end())
+                (*iedge).end = this->mapNodesBottomUP[(*iedge).tmpend];
+            else
+                Rcpp::Rcerr << std::endl << "Relationship '" << (*iedge).tmpend << "' in term '" << typeNodes.at(i)->id << "' is currupted! [IGNORED]";
             //to specific
         }
     }
