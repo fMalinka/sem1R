@@ -101,9 +101,12 @@ public:
     arma::mat removeCoveredExamples(newComplex actbest, arma::mat *new_armaData, boost::dynamic_bitset<> classBitMask);
     std::string printCoveredExamples(newComplex actbest, arma::mat *new_armaData, boost::dynamic_bitset<> classBitMask, Rcpp::CharacterVector rownames, Rcpp::CharacterVector colnames);
     std::string printOnlyCoveredColExamples(newComplex actbest, arma::mat *new_armaData, boost::dynamic_bitset<> classBitMask, Rcpp::CharacterVector rownames, Rcpp::CharacterVector colnames);
-    Rcpp::CharacterVector getOnlyCoveredRowExamples(newComplex actbest, arma::mat *new_armaData, Rcpp::CharacterVector rownames);
-    Rcpp::CharacterVector getOnlyCoveredColExamples(newComplex actbest, arma::mat *new_armaData, Rcpp::CharacterVector colnames);
-    Rcpp::CharacterVector getOnlyCoveredRowColExamples(newComplex actbest, arma::mat *new_armaData, Rcpp::CharacterVector rownames, Rcpp::CharacterVector colnames);
+    Rcpp::CharacterVector getOnlyCoveredRowExamples(newComplex actbest, boost::dynamic_bitset<> *classBitMask, arma::mat *new_armaData, Rcpp::CharacterVector rownames);
+    Rcpp::CharacterVector getOnlyCoveredRowNegExamples(newComplex actbest, boost::dynamic_bitset<> *classBitMask, arma::mat *new_armaData, Rcpp::CharacterVector rownames);
+    Rcpp::CharacterVector getOnlyCoveredColExamples(newComplex actbest, boost::dynamic_bitset<> *classBitMask, arma::mat *new_armaData, Rcpp::CharacterVector colnames);
+    Rcpp::CharacterVector getOnlyCoveredColNegExamples(newComplex actbest, boost::dynamic_bitset<> *classBitMask, arma::mat *new_armaData, Rcpp::CharacterVector colnames);
+    Rcpp::CharacterVector getOnlyCoveredRowColExamples(newComplex actbest, boost::dynamic_bitset<> *classBitMask, arma::mat *new_armaData, Rcpp::CharacterVector rownames, Rcpp::CharacterVector colnames);
+    Rcpp::CharacterVector getOnlyCoveredRowColNegExamples(newComplex actbest,  boost::dynamic_bitset<> *classBitMask, arma::mat *new_armaData, Rcpp::CharacterVector rownames, Rcpp::CharacterVector colnames);
 
 private:
     arma::mat *data;

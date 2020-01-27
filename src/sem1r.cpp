@@ -310,6 +310,7 @@ Rcpp::List sem1R::findDescription()
     clock_t beginTOP = std::clock();
     std::vector<std::string> coveredString(this->nrules);
     std::vector<Rcpp::CharacterVector> coveredRules(this->nrules);
+    std::vector<Rcpp::CharacterVector> coveredNegRules(this->nrules);
     
     Rcpp::CharacterVector dataRownames;
     Rcpp::CharacterVector dataColnames;
@@ -469,16 +470,27 @@ Rcpp::List sem1R::findDescription()
 
         std::string coveredDesc = beamTD->printOnlyCoveredColExamples(actbest, &(armaDataTMP), newclass, dataRownames, dataColnames);
         Rcpp::CharacterVector coveredList;
+        Rcpp::CharacterVector coveredNegList;
         if(this->ruleFormat == "col")
-            coveredList = beamTD->getOnlyCoveredColExamples(actbest, &(armaDataTMP), dataColnames);
+        {
+            coveredList = beamTD->getOnlyCoveredColExamples(actbest, &newclass, &(armaDataTMP), dataColnames);
+            coveredNegList = beamTD->getOnlyCoveredColNegExamples(actbest, &newclass, &(armaDataTMP), dataColnames);
+        }
         else if(this->ruleFormat == "row")
-            coveredList = beamTD->getOnlyCoveredRowExamples(actbest, &(armaDataTMP), dataRownames);
+        {
+            coveredList = beamTD->getOnlyCoveredRowExamples(actbest, &newclass, &(armaDataTMP), dataRownames);
+            coveredNegList = beamTD->getOnlyCoveredRowNegExamples(actbest, &newclass, &(armaDataTMP), dataRownames);
+        }
         else if(this->ruleFormat == "both")
-            coveredList = beamTD->getOnlyCoveredRowColExamples(actbest, &(armaDataTMP), dataRownames, dataColnames);
+        {
+            coveredList = beamTD->getOnlyCoveredRowColExamples(actbest, &newclass, &(armaDataTMP), dataRownames, dataColnames);
+            coveredNegList = beamTD->getOnlyCoveredRowColNegExamples(actbest, &newclass, &(armaDataTMP), dataRownames, dataColnames);
+        }
         else
             ;
 
         coveredRules[irule] = coveredList;
+        coveredNegRules[irule] = coveredNegList;
         coveredString[irule] = coveredDesc;
 					
         arma::mat new_armaData = beamTD->removeCoveredExamples(actbest, &(armaDataTMP), newclass);
@@ -537,8 +549,8 @@ Rcpp::List sem1R::findDescription()
 		}
                 //Rcpp List
                 Rcpp::List listRule = Rcpp::List::create(Rcpp::_["ruleID"] = irule+1, Rcpp::_["score"] = this->ruleset[irule].score, Rcpp::_["tscore"] = this->ruleset[irule].sig,
-                Rcpp::_["positiveCovered"] = this->ruleset[irule].coverPos, Rcpp::_["negativeCovered"] = this->ruleset[irule].coverNeg,
-                Rcpp::_["rules"] = getRuleID(&(this->ruleset[irule])), Rcpp::_["details"] = getRuleDetail(&(this->ruleset[irule])), Rcpp::_["covered"] = coveredRules[irule]);
+                Rcpp::_["nCoveredPOS"] = this->ruleset[irule].coverPos, Rcpp::_["nCoveredNEG"] = this->ruleset[irule].coverNeg,
+                Rcpp::_["rules"] = getRuleID(&(this->ruleset[irule])), Rcpp::_["details"] = getRuleDetail(&(this->ruleset[irule])), Rcpp::_["coveredPOS"] = coveredRules[irule], Rcpp::_["coveredNEG"] = coveredNegRules[irule]);
                 hypothesis[ihypo] = listRule;
                 ++ihypo;
     }

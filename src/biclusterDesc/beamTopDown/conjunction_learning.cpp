@@ -928,12 +928,14 @@ std::string BeamTopDown::printOnlyCoveredColExamples(newComplex actbest, arma::m
 }
 
 
-Rcpp::CharacterVector BeamTopDown::getOnlyCoveredRowExamples(newComplex actbest, arma::mat *new_armaData, Rcpp::CharacterVector rownames)
+Rcpp::CharacterVector BeamTopDown::getOnlyCoveredRowExamples(newComplex actbest, boost::dynamic_bitset<> *classBitMask, arma::mat *new_armaData, Rcpp::CharacterVector rownames)
 {
     Rcpp::CharacterVector coveredRules;
     arma::mat actMatrix = *new_armaData;
     arma::uvec indicesPos = arma::find(actMatrix == 1);
     arma::umat tPos = arma::ind2sub(arma::size(actMatrix), indicesPos);
+
+    int npositives = classBitMask->count();
 
     boost::dynamic_bitset<> rule = actbest.rules[0]->exampleCovered;
     for(int icomplex = 1; icomplex < actbest.rules.size(); ++icomplex)
@@ -942,13 +944,11 @@ Rcpp::CharacterVector BeamTopDown::getOnlyCoveredRowExamples(newComplex actbest,
     }
 
     boost::unordered_map<int, bool> closed;
-    for(int ibit = 0; ibit < indicesPos.n_rows; ++ibit)
-    {
-        int row = tPos.col(ibit)[0]; //row index
-        int col = tPos.col(ibit)[1];
-
+    for(int ibit = 0; ibit < npositives; ++ibit)
+    {       
         if(rule[ibit] == 1)
         {
+            int row = tPos.col(ibit)[0]; //row index
             if(closed.find(row) == closed.end())
             {
                 coveredRules.push_back(Rcpp::as<std::string>(rownames(row)));
@@ -959,12 +959,14 @@ Rcpp::CharacterVector BeamTopDown::getOnlyCoveredRowExamples(newComplex actbest,
     return coveredRules;
 }
 
-Rcpp::CharacterVector BeamTopDown::getOnlyCoveredColExamples(newComplex actbest, arma::mat *new_armaData, Rcpp::CharacterVector colnames)
+Rcpp::CharacterVector BeamTopDown::getOnlyCoveredRowNegExamples(newComplex actbest, boost::dynamic_bitset<> *classBitMask, arma::mat *new_armaData, Rcpp::CharacterVector rownames)
 {
     Rcpp::CharacterVector coveredRules;
     arma::mat actMatrix = *new_armaData;
-    arma::uvec indicesPos = arma::find(actMatrix == 1);
+    arma::uvec indicesPos = arma::find(actMatrix == 0);
     arma::umat tPos = arma::ind2sub(arma::size(actMatrix), indicesPos);
+
+    int npositives = classBitMask->count();
 
     boost::dynamic_bitset<> rule = actbest.rules[0]->exampleCovered;
     for(int icomplex = 1; icomplex < actbest.rules.size(); ++icomplex)
@@ -973,13 +975,43 @@ Rcpp::CharacterVector BeamTopDown::getOnlyCoveredColExamples(newComplex actbest,
     }
 
     boost::unordered_map<int, bool> closed;
-    for(int ibit = 0; ibit < indicesPos.n_rows; ++ibit)
+    for(int ibit = npositives; ibit < classBitMask->size(); ++ibit)
     {
-        int row = tPos.col(ibit)[0]; //row index
-        int col = tPos.col(ibit)[1];
-
         if(rule[ibit] == 1)
         {
+            int row = tPos.col(ibit-npositives)[0]; //row index
+            if(closed.find(row) == closed.end())
+            {
+                coveredRules.push_back(Rcpp::as<std::string>(rownames(row)));
+                closed[row] = true;
+            }
+            ibit += actMatrix.n_cols -1;
+        }
+    }
+    return coveredRules;
+}
+
+Rcpp::CharacterVector BeamTopDown::getOnlyCoveredColExamples(newComplex actbest, boost::dynamic_bitset<> *classBitMask, arma::mat *new_armaData, Rcpp::CharacterVector colnames)
+{
+    Rcpp::CharacterVector coveredRules;
+    arma::mat actMatrix = *new_armaData;
+    arma::uvec indicesPos = arma::find(actMatrix == 1);
+    arma::umat tPos = arma::ind2sub(arma::size(actMatrix), indicesPos);
+
+    int npositives = classBitMask->count();
+
+    boost::dynamic_bitset<> rule = actbest.rules[0]->exampleCovered;
+    for(int icomplex = 1; icomplex < actbest.rules.size(); ++icomplex)
+    {
+        rule &= actbest.rules[icomplex]->exampleCovered;
+    }
+
+    boost::unordered_map<int, bool> closed;
+    for(int ibit = 0; ibit < npositives; ++ibit)
+    {                
+        if(rule[ibit] == 1)
+        {
+            int col = tPos.col(ibit)[1];
             if(closed.find(col) == closed.end())
             {
                 coveredRules.push_back(Rcpp::as<std::string>(colnames(col)));
@@ -990,12 +1022,14 @@ Rcpp::CharacterVector BeamTopDown::getOnlyCoveredColExamples(newComplex actbest,
     return coveredRules;
 }
 
-Rcpp::CharacterVector BeamTopDown::getOnlyCoveredRowColExamples(newComplex actbest, arma::mat *new_armaData, Rcpp::CharacterVector rownames, Rcpp::CharacterVector colnames)
+Rcpp::CharacterVector BeamTopDown::getOnlyCoveredColNegExamples(newComplex actbest, boost::dynamic_bitset<> *classBitMask, arma::mat *new_armaData, Rcpp::CharacterVector colnames)
 {
     Rcpp::CharacterVector coveredRules;
     arma::mat actMatrix = *new_armaData;
-    arma::uvec indicesPos = arma::find(actMatrix == 1);
+    arma::uvec indicesPos = arma::find(actMatrix == 0);
     arma::umat tPos = arma::ind2sub(arma::size(actMatrix), indicesPos);
+
+    int npositives = classBitMask->count();
 
     boost::dynamic_bitset<> rule = actbest.rules[0]->exampleCovered;
     for(int icomplex = 1; icomplex < actbest.rules.size(); ++icomplex)
@@ -1003,17 +1037,78 @@ Rcpp::CharacterVector BeamTopDown::getOnlyCoveredRowColExamples(newComplex actbe
         rule &= actbest.rules[icomplex]->exampleCovered;
     }
 
-    for(int ibit = 0; ibit < indicesPos.n_rows; ++ibit)
+    boost::unordered_map<int, bool> closed;
+    for(int ibit = npositives; ibit < rule.size(); ++ibit)
     {
-        int row = tPos.col(ibit)[0]; //row index
-        int col = tPos.col(ibit)[1];
-
         if(rule[ibit] == 1)
         {
-                std::string desc = Rcpp::as<std::string>(rownames(row));
-                desc += ",";
-                desc += colnames(col);
-                coveredRules.push_back(desc);
+            int col = tPos.col(ibit-npositives)[1];
+            if(closed.find(col) == closed.end())
+            {
+                coveredRules.push_back(Rcpp::as<std::string>(colnames(col)));
+                closed[col] = true;
+            }
+            ibit += actMatrix.n_rows - 1;
+        }
+    }
+    return coveredRules;
+}
+
+Rcpp::CharacterVector BeamTopDown::getOnlyCoveredRowColExamples(newComplex actbest, boost::dynamic_bitset<> *classBitMask, arma::mat *new_armaData, Rcpp::CharacterVector rownames, Rcpp::CharacterVector colnames)
+{
+    Rcpp::CharacterVector coveredRules;
+    arma::mat actMatrix = *new_armaData;
+    arma::uvec indicesPos = arma::find(actMatrix == 1);
+    arma::umat tPos = arma::ind2sub(arma::size(actMatrix), indicesPos);
+
+    int npositives = classBitMask->count();
+
+    boost::dynamic_bitset<> rule = actbest.rules[0]->exampleCovered;
+    for(int icomplex = 1; icomplex < actbest.rules.size(); ++icomplex)
+    {
+        rule &= actbest.rules[icomplex]->exampleCovered;
+    }
+
+    for(int ibit = 0; ibit < npositives; ++ibit)
+    {        
+        if(rule[ibit] == 1)
+        {
+            int row = tPos.col(ibit)[0]; //row index
+            int col = tPos.col(ibit)[1];
+            std::string desc = Rcpp::as<std::string>(rownames(row));
+            desc += ",";
+            desc += colnames(col);
+            coveredRules.push_back(desc);
+        }
+    }
+    return coveredRules;
+}
+
+Rcpp::CharacterVector BeamTopDown::getOnlyCoveredRowColNegExamples(newComplex actbest, boost::dynamic_bitset<> *classBitMask, arma::mat *new_armaData, Rcpp::CharacterVector rownames, Rcpp::CharacterVector colnames)
+{
+    Rcpp::CharacterVector coveredRules;
+    arma::mat actMatrix = *new_armaData;
+    arma::uvec indicesPos = arma::find(actMatrix == 0);
+    arma::umat tPos = arma::ind2sub(arma::size(actMatrix), indicesPos);
+
+    int npositives = classBitMask->count();
+
+    boost::dynamic_bitset<> rule = actbest.rules[0]->exampleCovered;
+    for(int icomplex = 1; icomplex < actbest.rules.size(); ++icomplex)
+    {
+        rule &= actbest.rules[icomplex]->exampleCovered;
+    }
+
+    for(int ibit = npositives; ibit < rule.size(); ++ibit)
+    {
+        if(rule[ibit] == 1)
+        {
+            int row = tPos.col(ibit-npositives)[0]; //row index
+            int col = tPos.col(ibit-npositives)[1];
+            std::string desc = Rcpp::as<std::string>(rownames(row));
+            desc += ",";
+            desc += colnames(col);
+            coveredRules.push_back(desc);
         }
     }
     return coveredRules;
