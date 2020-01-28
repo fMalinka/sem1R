@@ -16,7 +16,7 @@ struct bottomFeature
     boost::dynamic_bitset<> exampleCovered;
     boost::dynamic_bitset<>  allSpecific;   //all specifics nodes
     boost::dynamic_bitset<>  allGeneral;    //all general nodes
-	int level;  //level of scpecificity, i.e. root is 0, ...
+    int level;  //level of scpecificity, i.e. root is 0, ...
     double actScore;
     double pathBestScore;
 };
@@ -42,7 +42,7 @@ struct newComplexStat
 {
     double score;
     double pathScore;
-	int coverPos;
+    int coverPos;
     int coverNeg;
     double sig;
     std::vector<bottomFeature> rules;

@@ -30,6 +30,9 @@ public:
     Rcpp::List computeTermsEnrichment();
     void printParetoSettings();
 
+    Rcpp::List getIgraphNodes() {return this->igraphNode;}
+    Rcpp::List getIgraphEdges() {return this->igraphEdge;}
+
     int filterTh;
     int ruleDepth;
     double signTH;	//siginificance threshold
@@ -39,6 +42,9 @@ public:
     int minLevel;
     std::string ruleFormat;
     int verbose;
+
+    Rcpp::List igraphNode;
+    Rcpp::List igraphEdge;
 
 private:
     boost::unordered_map<std::string, Ontology*> rowOntology;
@@ -71,6 +77,8 @@ RCPP_MODULE(mod_data)
     .method("setDataset", &sem1R::setDataset,  "Set a two-dimensional binary matrix.")
     .method("createROWOntology", &sem1R::createROWOntology, "Append a row ontology.")
     .method("createCOLOntology", &sem1R::createCOLOntology, "Append a column ontology.")
+    .method("getIgraphNodes", &sem1R::getIgraphNodes, "Returns igraph data.frame nodes.")
+    .method("getIgraphEdges", &sem1R::getIgraphEdges, "Returns igraph data.frame edges.")
     .method("computeTermsEnrichment", &sem1R::computeTermsEnrichment, "Compute enrichment score for each ontological term.")
     .field("filterTh", &sem1R::filterTh, "")
     .field("ruleDepth", &sem1R::ruleDepth, "Maximal length of induced rule.")
@@ -311,6 +319,8 @@ Rcpp::List sem1R::findDescription()
     std::vector<std::string> coveredString(this->nrules);
     std::vector<Rcpp::CharacterVector> coveredRules(this->nrules);
     std::vector<Rcpp::CharacterVector> coveredNegRules(this->nrules);
+    std::vector<Rcpp::DataFrame> igraphNodeVector;
+    std::vector<Rcpp::DataFrame> igraphEdgeVector;
     
     Rcpp::CharacterVector dataRownames;
     Rcpp::CharacterVector dataColnames;
@@ -489,6 +499,55 @@ Rcpp::List sem1R::findDescription()
         else
             ;
 
+
+        //igraph
+        boost::unordered_map<std::string, boost::dynamic_bitset<> > ontologyCommonTerms;
+        for(int iterm = 0; iterm < this->ruleset[irule].rules.size(); ++iterm)
+        {           
+            std::string ontoname = this->ruleset[irule].rules[iterm].noderef->onto_ref->getName();         
+            if(ontologyCommonTerms.find(ontoname) == ontologyCommonTerms.end())
+            {
+                ontologyCommonTerms[ontoname] = boost::dynamic_bitset<>(this->ruleset[irule].rules[iterm].allGeneral.size());
+            }
+            //std::cout << " onto prev: " << ontologyCommonTerms[ontoname].count() << " new: " << this->ruleset[irule].rules[iterm].allGeneral.count() << std::endl;
+            ontologyCommonTerms[ontoname] |= this->ruleset[irule].rules[iterm].allGeneral;
+        }
+        //iterate over commonterms
+        Rcpp::CharacterVector termid;
+        Rcpp::CharacterVector termname;
+        Rcpp::CharacterVector edgefrom;
+        Rcpp::CharacterVector edgeto;
+        Rcpp::NumericVector termlevel;
+
+        boost::unordered_map<std::string, boost::dynamic_bitset<> >::iterator itcommon;
+        for(itcommon = ontologyCommonTerms.begin(); itcommon != ontologyCommonTerms.end();++itcommon)
+        {
+            //std::cout << "ONTO: " << itcommon->first << " generals: " << itcommon->second.count() <<  std::endl;
+            size_t icombit = itcommon->second.find_first();
+            while(icombit != boost::dynamic_bitset<>::npos)
+            {
+                //nodes
+                termid.push_back(bottomRules[icombit].noderef->id);
+                termname.push_back(bottomRules[icombit].noderef->name);
+                termlevel.push_back(bottomRules[icombit].level);
+                //edges
+                size_t iparent = bottomRules[icombit].allParents.find_first();
+                while(iparent != boost::dynamic_bitset<>::npos)
+                {
+                    edgeto.push_back(bottomRules[iparent].noderef->id);
+                    edgefrom.push_back(bottomRules[icombit].noderef->id);
+                    //next
+                    iparent = bottomRules[icombit].allParents.find_next(iparent);
+                }
+                //next
+                icombit = itcommon->second.find_next(icombit);
+            }
+        }
+        Rcpp::DataFrame nodes = Rcpp::DataFrame::create(Rcpp::Named("nodeID") = termid, Rcpp::_["nodeName"] = termname, Rcpp::_["nodeLevel"] = termlevel);
+        Rcpp::DataFrame edges = Rcpp::DataFrame::create(Rcpp::Named("edgeFrom") = edgefrom, Rcpp::_["edgeTo"] = edgeto);
+        igraphEdgeVector.push_back(edges);
+        igraphNodeVector.push_back(nodes);
+
         coveredRules[irule] = coveredList;
         coveredNegRules[irule] = coveredNegList;
         coveredString[irule] = coveredDesc;
@@ -534,6 +593,8 @@ Rcpp::List sem1R::findDescription()
     Rcpp::Rcout << std::endl << std::endl  << "******************************************************************" << std::endl;
     Rcpp::Rcout << "************************** FINAL RULESET *************************" << std::endl;
     Rcpp::List hypothesis(trueHypothesisiSize);
+    Rcpp::List igraphNode(trueHypothesisiSize);
+    Rcpp::List igraphEdge(trueHypothesisiSize);
     int ihypo = 0;
     for(int irule = 0; irule < this->ruleset.size(); ++irule)
     {
@@ -552,9 +613,14 @@ Rcpp::List sem1R::findDescription()
                 Rcpp::_["nCoveredPOS"] = this->ruleset[irule].coverPos, Rcpp::_["nCoveredNEG"] = this->ruleset[irule].coverNeg,
                 Rcpp::_["rules"] = getRuleID(&(this->ruleset[irule])), Rcpp::_["details"] = getRuleDetail(&(this->ruleset[irule])), Rcpp::_["coveredPOS"] = coveredRules[irule], Rcpp::_["coveredNEG"] = coveredNegRules[irule]);
                 hypothesis[ihypo] = listRule;
+
+                //igraph
+                igraphNode[ihypo] = igraphNodeVector[ihypo];
+                igraphEdge[ihypo] = igraphEdgeVector[ihypo];
                 ++ihypo;
     }
 
-return hypothesis;
-
+    this->igraphEdge = igraphEdge;
+    this->igraphNode = igraphNode;
+    return hypothesis;
 }
