@@ -502,15 +502,19 @@ Rcpp::List sem1R::findDescription()
 
         //igraph
         boost::unordered_map<std::string, boost::dynamic_bitset<> > ontologyCommonTerms;
+        boost::unordered_map<std::string, boost::dynamic_bitset<> > ontologyRuleTerms;
         for(int iterm = 0; iterm < this->ruleset[irule].rules.size(); ++iterm)
         {           
             std::string ontoname = this->ruleset[irule].rules[iterm].noderef->onto_ref->getName();         
             if(ontologyCommonTerms.find(ontoname) == ontologyCommonTerms.end())
             {
                 ontologyCommonTerms[ontoname] = boost::dynamic_bitset<>(this->ruleset[irule].rules[iterm].allGeneral.size());
+                ontologyRuleTerms[ontoname] = boost::dynamic_bitset<>(this->ruleset[irule].rules[iterm].allGeneral.size());
             }
             //std::cout << " onto prev: " << ontologyCommonTerms[ontoname].count() << " new: " << this->ruleset[irule].rules[iterm].allGeneral.count() << std::endl;
             ontologyCommonTerms[ontoname] |= this->ruleset[irule].rules[iterm].allGeneral;
+            ontologyCommonTerms[ontoname][this->ruleset[irule].rules[iterm].IDind] = 1;
+            ontologyRuleTerms[ontoname][this->ruleset[irule].rules[iterm].IDind] = 1;
         }
         //iterate over commonterms
         Rcpp::CharacterVector termid;
@@ -518,6 +522,7 @@ Rcpp::List sem1R::findDescription()
         Rcpp::CharacterVector edgefrom;
         Rcpp::CharacterVector edgeto;
         Rcpp::NumericVector termlevel;
+        Rcpp::NumericVector isRuleterm;
 
         boost::unordered_map<std::string, boost::dynamic_bitset<> >::iterator itcommon;
         for(itcommon = ontologyCommonTerms.begin(); itcommon != ontologyCommonTerms.end();++itcommon)
@@ -530,6 +535,10 @@ Rcpp::List sem1R::findDescription()
                 termid.push_back(bottomRules[icombit].noderef->id);
                 termname.push_back(bottomRules[icombit].noderef->name);
                 termlevel.push_back(bottomRules[icombit].level);
+                if(ontologyRuleTerms[itcommon->first][icombit])
+                    isRuleterm.push_back(1);
+                else
+                    isRuleterm.push_back(0);
                 //edges
                 size_t iparent = bottomRules[icombit].allParents.find_first();
                 while(iparent != boost::dynamic_bitset<>::npos)
@@ -543,7 +552,7 @@ Rcpp::List sem1R::findDescription()
                 icombit = itcommon->second.find_next(icombit);
             }
         }
-        Rcpp::DataFrame nodes = Rcpp::DataFrame::create(Rcpp::Named("nodeID") = termid, Rcpp::_["nodeName"] = termname, Rcpp::_["nodeLevel"] = termlevel);
+        Rcpp::DataFrame nodes = Rcpp::DataFrame::create(Rcpp::Named("nodeID") = termid, Rcpp::_["nodeName"] = termname, Rcpp::_["nodeLevel"] = termlevel, Rcpp::_["isRuleTerm"] = isRuleterm);
         Rcpp::DataFrame edges = Rcpp::DataFrame::create(Rcpp::Named("edgeFrom") = edgefrom, Rcpp::_["edgeTo"] = edgeto);
         igraphEdgeVector.push_back(edges);
         igraphNodeVector.push_back(nodes);
