@@ -40,6 +40,7 @@ plotOntology <- function(mysem1R, ruleNumber = 1)
     }
   }
 }
+
 plotHeatmap <- function(mysem1R, hypothesis, matrix, binmatrix, ruleNumber = 1)
 {
   if(ruleNumber > length(hypothesis))
@@ -55,6 +56,11 @@ plotHeatmap <- function(mysem1R, hypothesis, matrix, binmatrix, ruleNumber = 1)
     require(pheatmap)
     if(mysem1R$ruleFormat == "col")
     {
+      require(RColorBrewer)
+      darkcols <- brewer.pal(8, "Dark2")
+      darkcols <- darkcols[1:2]
+      names(darkcols) <- c("POSITIVE", "NEGATIVE")
+      anno_colors <- list(category = darkcols)
       mynodes <- mysem1R$getIgraphNodes()[[ruleNumber]]
       mynodes <- mynodes[mynodes$isRuleTerm == 1, ]
       rulename <- paste0("'",as.character(mynodes$nodeName), collapse = "' AND ")
@@ -62,7 +68,7 @@ plotHeatmap <- function(mysem1R, hypothesis, matrix, binmatrix, ruleNumber = 1)
       mydata_new_category  <- rep("NEGATIVE", ncol(data2plot))
       mydata_new_category[colSums(binmatrix[,c(hypothesis[[ruleNumber]]$coveredPOS, hypothesis[[ruleNumber]]$coveredNEG)]) > 0] <- "POSITIVE"
       mydata_new_anot <- data.frame(colnames(data2plot), category=mydata_new_category, row.names = 1)
-      pheatmap(data2plot, annotation_col = mydata_new_anot, main = rulename)#paste0(hypothesis[[ruleNumber]]$rules, collapse = " AND "))
+      pheatmap(data2plot, annotation = mydata_new_anot, main = rulename, annotation_colors = anno_colors)
     }
   }
 }

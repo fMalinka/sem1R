@@ -605,7 +605,7 @@ Rcpp::List sem1R::findDescription()
     Rcpp::List igraphNode(trueHypothesisiSize);
     Rcpp::List igraphEdge(trueHypothesisiSize);
     int ihypo = 0;
-    for(int irule = 0; irule < this->ruleset.size(); ++irule)
+    for(int irule = 0; irule < trueHypothesisiSize; ++irule)
     {
 		if(this->ruleset[irule].score >= 0)
 		{
