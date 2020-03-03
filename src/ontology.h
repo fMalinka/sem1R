@@ -53,7 +53,8 @@ public:
     std::vector<std::vector<double> > getSemanticSimilarityMatrix() { return this->precomputedDistanceMatrix;}
     std::vector<std::vector<std::string> > convertRList2Vector(Rcpp::List desc);
     void addDescriptionTermsTest(std::vector<std::vector<std::string> > descriptionTermsTest) {this->descriptionTermsTest = descriptionTermsTest;}
-    boost::dynamic_bitset<> getTermBitAncestors(Node *searched);    
+    boost::dynamic_bitset<> getTermBitAncestors(Node *searched);
+    int getLevelOfSpecialization(Node *specific);
 private:
     std::string name;
     std::string pathToOntology;

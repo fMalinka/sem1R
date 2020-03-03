@@ -214,6 +214,57 @@ int Ontology::getLevelOfSpecialization(Node *specific, Node *general)
     return TERM_NOT_FOUND;
 }
 
+int Ontology::getLevelOfSpecialization(Node *specific)
+{
+    int level = 0;
+    std::list<Node*> nodePool;
+    nodePool.push_back(specific);
+    //we use list -> FIFO -> BFS
+    //1.push the first element
+    Node *front = nodePool.front();
+    if(front->relationship.empty())
+    {
+        return level;
+    }
+
+    boost::unordered_map<std::string, bool> CLOSED;
+    while(!nodePool.empty())
+    {
+        //1.push the first element
+        front = nodePool.front();
+        nodePool.pop_front();
+        if(front->relationship.empty())
+        {
+            return level;
+        }
+        std::list<Node*> nodePoolCandidates;
+        //3. if node is not equivalent, generate new ancestors and add them at the beggining
+        for(std::vector<edge>::iterator iedge = front->relationship.begin(); iedge != front->relationship.end(); ++iedge)
+        {
+            if(iedge->end != NULL)
+            {
+                //b) nasel jsi, nastav covered = true
+                //if(iedge->end->id == general->id)
+                //    return level;
+                //Rcpp::Rcout << "->" << iedge->end->id << " (parents: " << iedge->end->relationship.size() << ")" << std::endl;
+                if(CLOSED.find(iedge->end->id) == CLOSED.end())
+                    nodePoolCandidates.push_back(iedge->end);
+            }
+            //else
+            //    return level;
+
+        }
+        if(nodePool.empty())
+        {
+            ++level;
+            nodePool = nodePoolCandidates;
+        }
+
+    }
+    //return TERM_NOT_FOUND;
+    return -1;//TERM_NOT_FOUND;
+}
+
 
 int Ontology::findLGNancestors(Node *searched, boost::dynamic_bitset<> *bitset, boost::unordered_map<Node*, int> *mapNode2Int)
 {

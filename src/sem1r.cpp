@@ -28,6 +28,8 @@ public:
     void setDataset(Rcpp::NumericMatrix data_) {this->data = data_; armaData = as<arma::mat>(data_); this->rowOntology.clear(); this->colOntology.clear(); printAndCheckPipeline(SET_DATASET);}
     Rcpp::List findDescription();
     Rcpp::List computeTermsEnrichment();
+    Rcpp::List checkRowDescription();
+    Rcpp::List checkColDescription();
     void printParetoSettings();
 
     Rcpp::List getIgraphNodes() {return this->igraphNode;}
@@ -80,6 +82,8 @@ RCPP_MODULE(mod_data)
     .method("getIgraphNodes", &sem1R::getIgraphNodes, "Returns igraph data.frame nodes.")
     .method("getIgraphEdges", &sem1R::getIgraphEdges, "Returns igraph data.frame edges.")
     .method("computeTermsEnrichment", &sem1R::computeTermsEnrichment, "Compute enrichment score for each ontological term.")
+    .method("checkRowDescription", &sem1R::checkRowDescription, "Check row ontology description terms.")
+    .method("checkColDescription", &sem1R::checkColDescription, "Check col ontology description terms.")
     .field("filterTh", &sem1R::filterTh, "")
     .field("ruleDepth", &sem1R::ruleDepth, "Maximal length of induced rule.")
     .field("signTH", &sem1R::signTH, "Minimal value of Chi Square.")
@@ -287,6 +291,91 @@ Rcpp::List sem1R::computeTermsEnrichment()
     bicExamples.findPositiveExamples();
     bicExamples.findNegativeExamples();
     return bicExamples.getEnrichTerms();
+}
+
+
+Rcpp::List sem1R::checkRowDescription()
+{
+    if(printAndCheckPipeline(SET_DESCRIPTION_BICS) == PIPELINE_UNACCEPTED)
+        return Rcpp::List();
+
+    std::vector<Ontology *> refOntologies;
+
+    Rcpp::List ontolist(this->rowOntology.size());
+    int ionto = 0;
+    for(boost::unordered_map<std::string, Ontology *>::iterator it = this->rowOntology.begin(); it != this->rowOntology.end(); ++it)
+    {
+        //refOntologies.push_back(it->second);
+
+        Ontology *actOnto = it->second;        
+        std::vector<std::vector<std::string> > ontodescterms = actOnto->getDescriptionTerms();
+        Rcpp::List listdesc(ontodescterms.size());
+        for(int idesc = 0; idesc < ontodescterms.size(); ++idesc)
+        {
+            Rcpp::CharacterVector rowdesc;
+            for(int isubdesc = 0; isubdesc < ontodescterms[idesc].size(); ++isubdesc)
+            {
+                //if(actOnto->getOntologyParser()->getNodesBottomUP(&(ontodescterms[idesc][isubdesc])) != NULL)
+                //Rcpp::Rcout << "#"  << ontodescterms[idesc][isubdesc] << "#- ";
+                if(actOnto->getOntologyParser()->getNodesBottomUP(&(ontodescterms[idesc][isubdesc])) != NULL)
+                {                    
+                    //Rcpp::Rcout << "(" << ontodescterms[idesc][isubdesc] << " level: " << actOnto->getLevelOfSpecialization(actOnto->getOntologyParser()->getNodesBottomUP(&(ontodescterms[idesc][isubdesc]))) << ") ";
+                    rowdesc.push_back(ontodescterms[idesc][isubdesc] + std::string(", specificity level: ") + boost::lexical_cast<string>(actOnto->getLevelOfSpecialization(actOnto->getOntologyParser()->getNodesBottomUP(&(ontodescterms[idesc][isubdesc])))));
+                }
+                else
+                {
+                    //Rcpp::Rcout << "ontodesc: " << ontodescterms[idesc][isubdesc] << "not found!";
+                    rowdesc.push_back(ontodescterms[idesc][isubdesc] + std::string(" not found!"));
+                }
+            }
+            listdesc[idesc] = rowdesc;
+            Rcpp::Rcout << std::endl;
+        }
+        ontolist[ionto] = listdesc;
+        ++ionto;
+    }
+    return ontolist;
+}
+
+Rcpp::List sem1R::checkColDescription()
+{
+    if(printAndCheckPipeline(SET_DESCRIPTION_BICS) == PIPELINE_UNACCEPTED)
+        return Rcpp::List();
+
+    Rcpp::List ontolist(this->colOntology.size());
+    int ionto = 0;
+    for(boost::unordered_map<std::string, Ontology *>::iterator it = this->colOntology.begin(); it != this->colOntology.end(); ++it)
+    {
+        //refOntologies.push_back(it->second);
+
+        Ontology *actOnto = it->second;
+        std::vector<std::vector<std::string> > ontodescterms = actOnto->getDescriptionTerms();
+        Rcpp::List listdesc(ontodescterms.size());
+        for(int idesc = 0; idesc < ontodescterms.size(); ++idesc)
+        {
+            Rcpp::CharacterVector coldesc;
+            for(int isubdesc = 0; isubdesc < ontodescterms[idesc].size(); ++isubdesc)
+            {
+                //if(actOnto->getOntologyParser()->getNodesBottomUP(&(ontodescterms[idesc][isubdesc])) != NULL)
+                //Rcpp::Rcout << "#"  << ontodescterms[idesc][isubdesc] << "#- ";
+                if(actOnto->getOntologyParser()->getNodesBottomUP(&(ontodescterms[idesc][isubdesc])) != NULL)
+                {
+                    //Rcpp::Rcout << "(" << ontodescterms[idesc][isubdesc] << " level: " << actOnto->getLevelOfSpecialization(actOnto->getOntologyParser()->getNodesBottomUP(&(ontodescterms[idesc][isubdesc]))) << ") ";
+                    coldesc.push_back(ontodescterms[idesc][isubdesc] + std::string(", specificity level: ") + boost::lexical_cast<string>(actOnto->getLevelOfSpecialization(actOnto->getOntologyParser()->getNodesBottomUP(&(ontodescterms[idesc][isubdesc])))));
+                }
+                else
+                {
+                    //Rcpp::Rcout << "ontodesc: " << ontodescterms[idesc][isubdesc] << "not found!";
+                    coldesc.push_back(ontodescterms[idesc][isubdesc] + std::string(" not found!"));
+                }
+            }
+            listdesc[idesc] = coldesc;
+            Rcpp::Rcout << std::endl;
+        }
+        ontolist[ionto] = listdesc;
+        ++ionto;
+    }
+    return ontolist;
 }
 
 Rcpp::List sem1R::findDescription()
