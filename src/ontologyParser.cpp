@@ -107,7 +107,13 @@ Node* OntologyParser::createTerm(std::string *text, std::vector<termdef> *typede
             }
     */
             //std::cout << (*idef).id << std::endl;
-            boost::regex expr = boost::regex(std::string("#(relationship:\\s*)?" + (*idef).id + ":?\\s*([^\\s]+)"), boost::regex::icase);
+            //boost::regex expr = boost::regex(std::string("#(relationship:\\s*)?" + (*idef).id + ":?\\s*([^\\s]+)"), boost::regex::icase);
+            //boost::regex expr = boost::regex(std::string("#(relationship:\\s*)" + (*idef).id + "\\s*(([^#\\s]+))[^#]*"), boost::regex::icase);
+            //boost::regex expr = boost::regex(std::string("#(relationship:\\s*)" + (*idef).id + ":?\\s*([^\\s]+)"), boost::regex::icase);
+            boost::regex expr = boost::regex(std::string("#(relationship:\\s*)?" + (*idef).id + ":?\\s*([^#\\s]+)"), boost::regex::icase);
+            //boost::regex expr = boost::regex(std::string("#(relationship:\\s*)?" + (*idef).id + ":?\\s+([^\\s]+)#"), boost::regex::icase);
+            //std::cout << "!" << *text << "!" << std::endl;
+
             boost::regex_token_iterator<std::string::iterator> iter(text->begin(), text->end(), expr, 2);
             boost::regex_token_iterator<std::string::iterator> end;
             for(;iter != end; ++iter )

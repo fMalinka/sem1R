@@ -449,7 +449,7 @@ void Ontology::precomputeSemanticPatterns(int vectorsize)
                 }
                 else
                 {
-                    Rcpp::Rcerr << "Decription term '" << *iterm << "'' has not been found in " << this->getName() << " ontology! [IGNORED]" << std::endl;
+                    Rcpp::Rcerr << "Decription term '" << *iterm << "' has not been found in " << this->getName() << " ontology! [IGNORED]" << std::endl;
                 }
             }
             //std::cout << "pattern: " << ivec << " count:" << pattern->count() << std::endl;
