@@ -5,7 +5,7 @@ dotOBOpath <- system.file('extdata', 'dotOntology.obo', package="sem1R")
 goOBOpath <- system.file('extdata', 'go-basic-reduced.obo', package="sem1R")
 mymatrixpath <- system.file('extdata', 'dotmatrix.csv', package="sem1R")
 initColpath <- system.file('extdata', 'initColDot.csv', package="sem1R")
-initRowpath <- system.file('extdata', 'initRowDot.csv', package="sem1R")
+initRowpath <- system.file('extdata', 'initRowDot_reduced.csv', package="sem1R")
 
 mystruct <- list()
 if(dotOBOpath == "" || goOBOpath == "" || mymatrixpath == "" ||
@@ -38,7 +38,7 @@ rowList <- list()
 for(irow in 1:nrow(initRow))
 {
 myvct <- as.character(initRow[irow,-1])
-myvct <- myvct[myvct!=""]
+myvct <- myvct[myvct!="" & myvct!="NA"]
 rowList <- append(rowList, list(myvct))
 names(rowList)[irow] <- initRow[irow,1]
 }
