@@ -25,7 +25,7 @@ If you choosen instalation via devtools, you would go to the terminal, run `R` a
 
 ```
 >library(devtools)
->install_gitHub("fmalinka/sem1R")
+>install_github("fmalinka/sem1R")
 ```
 All prerequisites packages should be installed automatically.
 
@@ -79,34 +79,34 @@ Finally, let's run the example!
 
 First of all, load the R library and create a new class `sem1R`. Then, we load the example data containing all necessary files described above.
 ```
->library(sem1R)
->mysem1R <- new(sem1R)
->myExample <- getDatasetExample()
+> library(sem1R)
+> mysem1R <- new(sem1R)
+> myExample <- getDatasetExample()
 
 ```
 Now, we load the data matrix to the sem1R class. Be sure, that the data matrix is a 'matrix' R type and has named rows and columns. It is important! Note that public methods of the class are call by $ symbol.
 ```
-mysem1R$setDataset(myExample$datamatrix)
+> mysem1R$setDataset(myExample$datamatrix)
 ```
 Then, we load all ontologies. For this, use `createCOLOntology` or `createROWOntology` methods, it depends on your matrix design generally. The first argument of these methods is name of ontolgy, the second argument set up path to the corresponding obo file, and the last one is a list of vectors representing the connection between rows/columns and ontologies. For the proper format look at one of the examples (myExample$colOntologyDesc or myExample$rowOntologyDesc). When you have more than one ontology, just call the corresponding method one again. However, the name of ontology mush be unique!
 ```
-mysem1R$createCOLOntology("DOT", myExample$colOntologyPath, myExample$colOntologyDesc)
-mysem1R$createROWOntology("GO", myExample$rowOntologyPath, myExample$rowOntologyDesc)
+> mysem1R$createCOLOntology("DOT", myExample$colOntologyPath, myExample$colOntologyDesc)
+> mysem1R$createROWOntology("GO", myExample$rowOntologyPath, myExample$rowOntologyDesc)
 ```
 Now, we set all algorithm parameters (see R manual).
 ```
->mysem1R$filterTh <- 50
->mysem1R$objective <- "auc"
->mysem1R$ruleDepth <- 3
->mysem1R$nrules <- 2
->mysem1R$featureSelectionMethod <- 0
->mysem1R$minLevel <- 2
+> mysem1R$filterTh <- 50
+> mysem1R$objective <- "auc"
+> mysem1R$ruleDepth <- 3
+> mysem1R$nrules <- 2
+> mysem1R$featureSelectionMethod <- 0
+> mysem1R$minLevel <- 2
 ```
 If you want to check out correcness of the connection of data matrix and the ontologies, call 'mysem1R$checkRowDescription()' or 'mysem1R$checkColDescription()'.
 
 Finally, run the algorithm and save the results!
 ```
->myhypothesis <- mysem1R$findDescription()
+> myhypothesis <- mysem1R$findDescription()
 ```
 
 When it ends ...
