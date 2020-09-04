@@ -174,7 +174,9 @@ where ruleID represents order of the induced rule, score represents quality of t
 ## Citation
 Cite please:
 
-Malinka, F., Zelezny, F., Klema, J. Finding semantic patterns in omics data using concept rule learning with an ontology-based refinement operator. Unpublished.
+Malinka, F., železný, F. & Kléma, J. Finding semantic patterns in omics data using concept rule learning with an ontology-based refinement operator. BioData Mining 13, 13 (2020). https://doi.org/10.1186/s13040-020-00219-6
+
+or our related work
 
 Kléma, J., Malinka, F. & železný, F. Semantic biclustering for finding local, interpretable and predictive expression patterns. BMC Genomics 18, 752 (2017) doi:10.1186/s12864-017-4132-5
 
