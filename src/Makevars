@@ -1,22 +1,16 @@
 regex_src=${wildcard regex/*.cpp}
 regex_objs=${regex_src:.cpp=.o}
 
-nsga2_src=${wildcard nsga2/*.cpp}
-nsga2_objs=${nsga2_src:.cpp=.o}
-
 beamtd_src=${wildcard biclusterDesc/beamTopDown/*.cpp}
 beamtd_objs=${beamtd_src:.cpp=.o}
 
 REGEXLIB=libboost_regex.a
-NSGA2LIB=libNSGA2.a
 BEAMTDLIB=libbeamtd.a
 USERDIR=${R_PACKAGE_DIR}/lib${R_ARCH}
 USERLIB=${USERDIR}/${REGEXLIB}
-USERLIB_NSGA2=${USERDIR}/${NSGA2LIB}
 USERLIB_BEAMTD2=${USERDIR}/${BEAMTDLIB}
 
 PKG_LIBS +="${USERLIB}"
-PKG_LIBS +="${USERLIB_NSGA2}"
 PKG_LIBS +="${USERLIB_BEAMTD2}"
 
 
@@ -27,16 +21,12 @@ PKG_CXXFLAGS=$(SHLIB_OPENMP_CXXFLAGS)
 
 all: $(SHLIB) 
 
-$(SHLIB): $(USERLIB) $(USERLIB_NSGA2) $(USERLIB_BEAMTD2)
+$(SHLIB): $(USERLIB) $(USERLIB_BEAMTD2)
 
 
 $(USERLIB): ${regex_objs}
 	mkdir -p "${USERDIR}"
 	$(AR) rs "${USERLIB}" ${regex_objs}
-
-$(USERLIB_NSGA2): ${nsga2_objs}
-	mkdir -p "${USERDIR}"
-	$(AR) rs "${USERLIB_NSGA2}" ${nsga2_objs}
 
 $(USERLIB_BEAMTD2): ${beamtd_objs}
 	mkdir -p "${USERDIR}"
